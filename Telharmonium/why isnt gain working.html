@@ -1,0 +1,24 @@
+<html>
+<head></head>
+<body>
+<script>
+
+var audio_context = window.AudioContext || window.webkitAudioContext;
+var con = new audio_context();
+
+var thing = [];
+thing.amp = [];
+thing.osc = [];
+thing.amp[1] = con.createGain();
+thing.amp[1].connect(con.destination);
+
+thing.osc[9] = con.createOscillator();
+thing.osc[9].connect(thing.amp[1]);
+thing.osc[9].start()
+
+thing.amp[1].gain.value = 0;
+
+
+</script>
+</body>
+</html>

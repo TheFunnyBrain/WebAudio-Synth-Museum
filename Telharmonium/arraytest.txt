@@ -1,0 +1,15 @@
+<html><head></head><body>
+
+<script>
+
+var audio_context = window.AudioContext || window.webkitAudioContext;
+var con = new audio_context();
+
+	
+createNoteOSC();
+function createNoteOSC(fundamental1){
+	fundamental1[0] = con.createOscillator[];
+	
+}
+
+</script>

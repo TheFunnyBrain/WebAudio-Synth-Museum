@@ -1,0 +1,597 @@
+<html>
+<head>
+<!-- SOURCE FOR THE DIAL: https://codepen.io/enxaneta/pen/EVYRJJ<-->
+<style>
+  
+header {
+				width:100%;
+				background-color:orange;
+				text-align:center;
+				padding-bottom:40px;
+				padding-top:40px;
+				font-size:3em;
+
+}
+
+  width: 100%;
+  height: 100%;
+  margin: 0px auto;
+  background-color: #0a1a17;
+  font-size: 12px;
+  color: #663333;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+
+a {
+ text-decoration: none;
+	font-size:0.7em;
+
+}
+
+.container {
+  position: relative;
+  margin: 0, auto, 0, auto;
+  
+  height: 165px;
+  width: 330px;
+
+}
+
+.output {
+  line-height: 35px;
+  width: 60px;
+  height: 30px;
+  background-color: #663333;
+  border-radius: 60px 60px 0 0;
+  position: absolute;
+  top: 135px;
+  left: 135px;
+  text-align: center;
+  display:none;
+}
+
+.initialValue {
+  border-bottom: 1px solid black;
+  padding-left:5px;
+  padding-right:5px;
+  color: black;
+  display: inline-block;
+  width: 3em;
+  background-color: white;
+  margin: 1em auto;
+  outline: none;
+  font-size: 16px;
+  text-align: center;
+}
+/*SVG*/
+
+svg {
+  margin: 0px;
+  padding: 0;
+  cursor: pointer;
+  border: 0px solid #0a1a17;
+}
+
+svg.focusable {
+}
+
+.outline,
+.fill,
+.center,
+.needle,
+.scale,
+.output {
+  pointer-events: none;
+  
+  
+  
+      -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.outline {
+  fill: #663333;
+}
+
+.fill {
+  fill: #663333;
+}
+
+.needle {
+  fill: grey;
+}
+
+.scale {
+  stroke: #aaa;
+}
+
+text {
+  text-anchor: middle;
+  dominant-baseline: alphabetic;
+  font: 12px, 
+  fill: #663333;
+}
+
+<!-- End of https://codepen.io/enxaneta/pen/EVYRJJ<-->
+</style></head>
+<body>
+	<header><a href="http://synthmuseum.thefunnybrain.com/audion.html" style="float:left; text-decoration: none;
+	font-size:0.7em;"><- Audion, 1915</a>	Dynaphone, 1927	<a href="http://synthmuseum.thefunnybrain.com/rhythmicon.html" style="float:right;  text-decoration: none;
+	font-size:0.7em;">Rhythmicon, 1930 -></a></header>
+	
+<!-- SOURCE: https://codepen.io/enxaneta/pen/EVYRJJ<-->
+		<div class="container A"; >
+		  <svg class="typeRange" height="500px" width="1000px" view-box="0 0 1000 1000">
+
+			<g class="scale" stroke="red"></g>
+
+			<path class="outline" d="" />
+			<path class="fill" d="" />
+			<polygon class="needle" points="220,10 300,210 220,250 140,210" />
+		  </svg>
+		  <div class="output"></div>
+		</div>
+	<div id="box" style="width:900px; view-box=0 0 1000 1000; margin-left:38px; margin-top:330; height:330; background-color:#663333; text-align:center; padding: 10px">
+		
+		<div style="width:40;display:inline-block; float:left">
+			<h2>Off</h2>
+			<div id="onOffSwitch" style="width:30; transform: rotate(90deg); display:inline-block"></div>
+			<h2>On</h2>
+		</div>
+		<input type="text" class="initialValue" value="20" style="float:center" />
+		<div style="display:inline-block; float:right">
+			<h2>Full - Low - High</h2>
+			<div id ="octaveSlider" style="display:inline-block"></div>
+			<br>
+		</div>
+
+		<div style="display:inline-block; font-weight:bold; margin-top:50">
+			<div style="display:inline-block; padding-right:30px; left:0">Off</div>
+			<div style="display:inline-block;padding-left:30px">Fundamental (1:1)</div>
+			<div style="display:inline-block; padding-left:40px">3rd - (5:4)</div>
+			<div style="display:inline-block; padding-left:70px">5th (3:2)</div>
+			<div style="display:inline-block; padding-left:60px">7th (15:8)</div>
+			<div style="display:inline-block;padding-left:50px">Octave (2:1)</div>
+			<br>
+			<div id="extraHarmonic1"></div>
+			<br>
+			<div id="extraHarmonic2" ></div>
+			<br>
+			<div id="extraHarmonic3"></div>
+			<br>
+			<div id="extraHarmonic4"></div>
+			<br>
+			<div id="extraHarmonic5"></div>
+		</div>
+<script src="https://rawgit.com/nexus-js/ui/master/dist/NexusUI.js"></script>
+<script>
+		var mainWidth = window.innerWidth;
+		var mainHeight = window.innerHeight;
+
+		var audio_context = window.AudioContext || window.webkitAudioContext;
+		var con = new audio_context();
+	
+		
+		var mainVolume = con.createGain();
+		mainVolume.connect(con.destination);
+		
+		
+		//carrier - this is the fundamental frequency which is controlled by the dial
+		var carrierOscillator = con.createOscillator();
+		carrierOscillator.frequency.value = 440;
+		carrierOscillator.connect(mainVolume);
+		carrierOscillator.start();
+		
+		//user can change the harmonics, but default is frequency * 1.5 - 5th
+		var carrier1stOscillator = con.createOscillator();
+		carrier1stOscillator.frequency.value = 660;
+		carrier1stOscillator.connect(mainVolume);
+		carrier1stOscillator.start();
+		
+		//user can change the harmonics, but default is frequency * 2 - 1 octave up
+		var carrier2ndOscillator = con.createOscillator();
+		carrier2ndOscillator.frequency.value = 880;
+		carrier2ndOscillator.connect(mainVolume);
+		carrier2ndOscillator.start();
+
+		//user can change the harmonics, but default is frequency * 4 - 2 octaves up
+		var carrier3rdOscillator = con.createOscillator();
+		carrier3rdOscillator.frequency.value = 1760;
+		carrier3rdOscillator.connect(mainVolume);
+		carrier3rdOscillator.start();
+
+		//user can change the harmonics, but default is frequency * 6 -2.5 octaves up
+		var carrier4thOscillator = con.createOscillator();
+		carrier4thOscillator.frequency.value = 2640;
+		carrier4thOscillator.connect(mainVolume);
+		carrier4thOscillator.start();
+		//user can change the harmonics, but default is frequency * 8 - 3 octaves up
+		var carrier5thOscillator = con.createOscillator();
+		carrier5thOscillator.frequency.value = 3520;
+		carrier5thOscillator.connect(mainVolume);
+		carrier5thOscillator.start();
+		
+		//modifier goes into carrier's frequency after being amplified
+		var modGain = con.createGain();
+		modGain.gain.value = 1065;
+		modGain.connect(carrierOscillator.frequency)
+		var modOsc = con.createOscillator();
+		modOsc.frequency.value = 833;
+		modOsc.connect(modGain);
+		modOsc.start();
+		
+		
+		
+
+		var onOffToggler = new Nexus.Toggle('#onOffSwitch',{'state': true});
+		onOffToggler.colorize("accent","#cccccc")
+		var onOffBool = true;
+		onOffSwitch = document.getElementById('onOffSwitch');
+		onOffSwitch.style.webkitTransform="rotate 90 deg";
+		onOffToggler.on('click', function(e){
+			onOffBool = !onOffBool;
+			if(onOffBool === false){
+				mainVolume.gain.value = 0;
+				onOffToggler.value = 0;
+			}
+			if(onOffBool === true){
+				mainVolume.gain.value = 1;
+				onOffToggler.value = 1;
+			}
+		}
+		)
+		
+		
+		//
+		//6644.88
+	
+	//A note on frequency overlap, ! denotes overlap between the settings.	
+	/* Source: http://120years.net/the-dynaphonerene-bertrandfrance1927/
+	"The total rotation of the dial was equal to seven octaves but only 
+	the five highest or lowest could be selected at any one time by the 
+	means of a switch, giving an overlap of three octaves common to both ranges"./*
+	//Hz					0			220			440			880			1760		3520		7040		Range: 0 to 14080hz
+	//Octave (set 1)		1			2 			3 			4! 			5! 		
+	//Octave (set 2)								3!			4!			5 !			6 			7 */
+
+/*SOURCE: https://codepen.io/enxaneta/pen/EVYRJJ
+This code is slightly modified to:
+	-Adjust the dial numbers to note frequencies (the original code was a 0-100 scale)
+	-Integrate carrierOscillator's frequency.value into the updateInput function, so that the pitch changes when the dial is moved.
+*/
+var containersRy = document.querySelector(".container");
+var svg = document.querySelector(".typeRange");
+var output = document.querySelector(".output");
+var outline = document.querySelector(".outline");
+var fill = document.querySelector(".fill");
+var center = document.querySelector(".center");
+var needle = document.querySelector(".needle");
+
+var initialValue = document.querySelector(".initialValue");
+
+var rad = Math.PI / 180;
+var NS = "http:\/\/www.w3.org/2000/svg";
+
+var W = parseInt(window.getComputedStyle(svg, null).getPropertyValue("width"));
+var offset = 40;
+var cx = ~~(W / 2);
+var cy = 500;
+
+var r1 = cx - offset;
+var delta = ~~(r1 / 4);
+
+var initVal = initialValue.value;
+
+var isDragging = false;
+
+var x1 = cx + r1,
+  y1 = cy;
+var r2 = r1 - delta;
+
+var x2 = offset,
+  y2 = cy;
+var x3 = x1 - delta,
+  y3 = cy;
+
+  
+var sliderChoice = 5.6
+var test = 0
+ octaveSlider = new Nexus.Slider('#octaveSlider', {'step':1, 'mi....n':0, 'max': 2});
+ octaveSlider.colorize("accent","#cccccc")
+octaveSlider.on('change', function(e){
+	if(e === 0){
+		test = 0
+		sliderChoice = 5.6;
+		noteRangeMultiplier = 1.52539;
+		//0 - 14,080 - wider range is just intended to reflect the interest in high pitch fundamentals
+		// "To increase the range of the instrument to reach the highest frequencies which no other 
+		//instrument can give, together with adequate intensity".
+	}
+	else if (e === 1){
+		test = 1
+		sliderChoice = 50
+		noteRangeMultiplier = 13.64;
+		//0-1,760
+	}
+	else if (e ===2){
+		test = 2
+		sliderChoice = 12;
+		noteRangeMultiplier = 3.0518;
+		//this needs to be the high ranges
+		//440 - 7040
+	}
+	drawScale(e);
+})
+function drawScale() {
+  sr1 = r1 + 5;
+  sr2 = r2 - 5;
+  srT = r1 + 20;
+  var scale = document.querySelector(".scale");
+  clearRect(scale)
+  var n = 0;
+  
+ //THIS HAS BEEN MODIFIED TO ADD THE SLIDERS AND FIT DIFFERENT FREQUENCIES AND DIAL RANGES
+
+
+//var multiplier to get the right notes
+
+
+//THIS ONE IS THE LOW RANGE - 0 - 1760 - 5.62
+console.log(sliderChoice);
+ for (var sa = -180; sa <= 0; sa += sliderChoice) {
+    var sx1 = cx + sr1 * Math.cos(sa * rad);
+    var sy1 = cy + sr1 * Math.sin(sa * rad);
+    var sx2 = cx + sr2 * Math.cos(sa * rad);
+    var sy2 = cy + sr2 * Math.sin(sa * rad);
+    var sxT = cx + srT * Math.cos(sa * rad);
+    var syT = cy + srT * Math.sin(sa * rad);
+
+    var scaleLine = document.createElementNS(NS, "line");
+    var scaleLineObj = {
+      class: "scale",
+      x1: sx1,
+      y1: sy1,
+      x2: sx2,
+      y2: sy2
+    };
+    setSVGAttributes(scaleLine, scaleLineObj);
+
+    scale.appendChild(scaleLine);
+
+    var scaleText = document.createElementNS(NS, "text");
+    var scaleTextObj = {
+      class: "scale",
+      x: sxT,
+      y: syT,
+    };
+    setSVGAttributes(scaleText, scaleTextObj);
+	if(test === 2){
+		scaleText.textContent = (n * 440) + 440;
+	}
+	else{
+		scaleText.textContent = (n * 440);
+	}
+    
+    scale.appendChild(scaleText);
+
+    n++
+
+  }
+
+}
+
+function drawInput(cx, cy, r1, offset, delta, a) {
+
+  var d1 = getD1(cx, cy, r1, offset, delta);
+  var d2 = getD2(cx, cy, r1, offset, delta, a);
+
+  drawScale();
+
+  outline.setAttributeNS(null, "d", d1);
+  fill.setAttributeNS(null, "d", d2);
+
+  drawNeedle(cx, cy, r1, a);
+}
+var noteRangeMultiplier = 1.52539;
+console.log("W = " + W)
+var boxDiv = document.getElementById(''); 
+
+//this list is used to set the below multipliers, up in the multiplier, each one has their own value set from here.
+var possibleExtraMultipliers = [0,1,1.25,1.5,1.875,2]
+ var carrier1stSlider = new Nexus.Slider('#extraHarmonic1',{size:[700,20],'step':1,'min':0,'max':5});
+ 	carrier1stSlider.colorize("accent","#cccccc");
+ var carrier1stMultiplier = 0;
+ carrier1stSlider.on('change', function(e){
+	carrier1stMultiplier = possibleExtraMultipliers[e];
+	console.log(carrier1stMultiplier);
+ });
+ 
+ var carrier2ndSlider = new Nexus.Slider('#extraHarmonic2',{size:[700,20],'step':1,'min':0,'max':5});
+ 	carrier2ndSlider.colorize("accent","#cccccc");
+  var carrier2ndMultiplier = 0;
+ carrier2ndSlider.on('change', function(e){
+	carrier2ndMultiplier = possibleExtraMultipliers[e];
+	console.log(carrier2ndMultiplier);
+ });
+ 
+ var carrier3rdSlider = new Nexus.Slider('#extraHarmonic3',{size:[700,20],'step':1,'min':0,'max':5});
+ 	carrier3rdSlider.colorize("accent","#cccccc");
+  var carrier3rdMultiplier = 0;
+ carrier3rdSlider.on('change', function(e){
+	carrier3rdMultiplier = possibleExtraMultipliers[e];
+	console.log(carrier3rdMultiplier);
+ });
+ var carrier4thSlider = new Nexus.Slider('#extraHarmonic4',{size:[700,20],'step':1,'min':0,'max':5});
+ 	carrier4thSlider.colorize("accent","#cccccc");
+  var carrier4thMultiplier = 0;
+ carrier4thSlider.on('change', function(e){
+	carrier4thMultiplier = possibleExtraMultipliers[e];
+	console.log(carrier4thMultiplier);
+ });
+ var carrier5thSlider = new Nexus.Slider('#extraHarmonic5',{size:[700,20],'step':1,'min':0,'max':5});
+ 	carrier5thSlider.colorize("accent","#cccccc");
+  var carrier5thMultiplier = 0
+ carrier5thSlider.on('change', function(e){
+	carrier5thMultiplier = possibleExtraMultipliers[e];
+	console.log(carrier5thMultiplier);
+ });
+ 
+ 
+
+function updateInput(p, cx, cy, r1, offset, delta) {
+
+  var x = p.x;
+  var y = p.y;
+  var lx = cx - x;
+  var ly = cy - y;
+
+  var a = Math.atan2(ly, lx) / rad - 180;
+
+  drawInput(cx, cy, r1, offset, delta, a);
+  //output.innerHTML = Math.round((a + 180) / 1.8);
+  //initialValue.value = Math.round((a + 180) / 1.8);
+  // MODIFIED TO ADD IN VARIABLE FOR SWITCH TO CHOOSE OCTAVES
+  //output.innerHTML = ((a + 180) / 1.8);
+  //output.innerHTML = ((a + 180) / 1.8);
+  
+//noteRangeMultiplierOLD = 12.2725;
+//1 IS CALIBRATED
+ //var noteRangeMultiplier = 1.52539;
+//2 IS CALIBRATED
+ //var noteRangeMultiplier = 13.64;
+// 3 is done, but I'm not 100% happy with it, most notes are roughly on their mark, for example 660 is perfect, but some are quite out, which means the precision from the number dial is a useful feature worth keeping.
+ //var noteRangeMultiplier = 3.0518;
+ 
+ //NOTE: 
+		//Standard multiplier is 1.53405 - this gives all ranges and should be for when the slider is at 0.
+		//Lower 5 octaves multiplier is 12.2725 1760 should be max for setting one
+ //These are purely to set the frequency, they work off the slider, but the numbers on the dial are not matched to the output here
+  initialValue.value = ((a + 180) / noteRangeMultiplier);
+  carrierOscillator.frequency.value = initialValue.value * 120;
+  carrier1stOscillator.frequency.value = carrierOscillator.frequency.value * carrier1stMultiplier;
+  carrier2ndOscillator.frequency.value = carrierOscillator.frequency.value * carrier2ndMultiplier;
+  carrier3rdOscillator.frequency.value = carrierOscillator.frequency.value * carrier3rdMultiplier;
+  carrier4thOscillator.frequency.value = carrierOscillator.frequency.value * carrier4thMultiplier;
+  carrier5thOscillator.frequency.value = carrierOscillator.frequency.value * carrier5thMultiplier;
+
+   initialValue.value = initialValue.value * 120;
+  console.log(carrierOscillator.frequency.value);
+}
+
+function getD1(cx, cy, r1, offset, delta) {
+
+  var x1 = cx + r1,
+    y1 = cy;
+  var x2 = offset,
+    y2 = cy;
+  var r2 = r1 - delta;
+  var x3 = x1 - delta,
+    y3 = cy;
+  var d1 =
+    "M " + x1 + ", " + y1 + " A" + r1 + "," + r1 + " 0 0 0 " + x2 + "," + y2 + " H" + (offset + delta) + " A" + r2 + "," + r2 + " 0 0 1 " + x3 + "," + y3 + " z";
+  return d1;
+}
+
+function getD2(cx, cy, r1, offset, delta, a) {
+  a *= rad;
+  var r2 = r1 - delta;
+  var x4 = cx + r1 * Math.cos(a);
+  var y4 = cy + r1 * Math.sin(a);
+  var x5 = cx + r2 * Math.cos(a);
+  var y5 = cy + r2 * Math.sin(a);
+
+  var d2 =
+    "M " + x4 + ", " + y4 + " A" + r1 + "," + r1 + " 0 0 0 " + x2 + "," + y2 + " H" + (offset + delta) + " A" + r2 + "," + r2 + " 0 0 1 " + x5 + "," + y5 + " z";
+  return d2;
+}
+
+function drawNeedle(cx, cy, r1, a) {
+
+  var nx1 = cx + 5 * Math.cos((a - 90) * rad);
+  var ny1 = cy + 5 * Math.sin((a - 90) * rad);
+
+  var nx2 = cx + (r1 + 15) * Math.cos(a * rad);
+  var ny2 = cy + (r1 + 15) * Math.sin(a * rad);
+
+  var nx3 = cx + 5 * Math.cos((a + 90) * rad);
+  var ny3 = cy + 5 * Math.sin((a + 90) * rad);
+
+  var points = nx1 + "," + ny1 + " " + nx2 + "," + ny2 + " " + nx3 + "," + ny3;
+  needle.setAttributeNS(null, "points", points);
+}
+
+// helpers
+function oMousePos(elmt, evt) {
+  var ClientRect = elmt.getBoundingClientRect();
+  return { //obj
+    x: Math.round(evt.clientX - ClientRect.left),
+    y: Math.min(Math.round(evt.clientY - ClientRect.top), cy)
+  }
+}
+
+function clearRect(node) {
+  while (node.firstChild) {
+    node.removeChild(node.firstChild);
+  }
+}
+
+function setSVGAttributes(elmt, oAtt) {
+  for (var prop in oAtt) {
+    elmt.setAttributeNS(null, prop, oAtt[prop]);
+  }
+}
+
+// events
+window.addEventListener("load", function() {
+  var pa = (initVal * 1.8) - 180;
+  var p = {}
+  p.x = cx + r1 * Math.cos(pa * rad);
+  p.y = cy + r1 * Math.sin(pa * rad);
+  updateInput(p, cx, cy, r1, offset, delta)
+}, false);
+
+initialValue.addEventListener("input", function() {
+  var val = this.value;
+  var newVal = (!isNaN(val) && val >= 0 && val <= 100) ? val : 18;
+  var pa = (newVal * 1.8) - 180;
+  var p = {}
+  p.x = cx + r1 * Math.cos(pa * rad);
+  p.y = cy + r1 * Math.sin(pa * rad);
+  updateInput(p, cx, cy, r1, offset, delta)
+}, false);
+
+svg.addEventListener("mousedown", function(evt) {
+  isDragging = true;
+  this.classList.add("focusable");
+  var mousePos = oMousePos(svg, evt);
+  updateInput(mousePos, cx, cy, r1, offset, delta);
+}, false);
+svg.addEventListener("mouseup", function(evt) {
+  isDragging = false;
+  this.classList.remove("focusable");
+}, false);
+svg.addEventListener("mouseout", function(evt) {
+  isDragging = false;
+  this.classList.remove("focusable");
+}, false);
+
+svg.addEventListener("mousemove", function(evt) {
+  if (isDragging) {
+    var mousePos = oMousePos(svg, evt);
+    updateInput(mousePos, cx, cy, r1, offset, delta);
+  }
+}, false);
+
+//End of https://codepen.io/enxaneta/pen/EVYRJJ
+
+</script>
+</body>
+
+
+
+</html>

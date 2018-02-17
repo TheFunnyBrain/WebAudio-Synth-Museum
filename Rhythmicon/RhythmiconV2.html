@@ -1,0 +1,1642 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<style>
+				h3 {display:none;
+				text-align: centre;
+				margin:auto}
+				
+						header {
+				width:100%;
+				background-color:orange;
+				text-align:center;
+				padding:60px
+			}
+
+			button {
+						border:solid;border-color:black;
+						text-align: center;
+						color: #ffcc00;
+						text-shadow: 0 0 6px black;
+						background-color: #755e00;
+						display:block;
+						margin:auto;
+						display:inline-block;
+						}
+			@media only screen and (max-width: 1000px) {
+			h3 {						border:solid;border-color:black;
+						text-align: center;
+						color: #ffcc00;
+						text-shadow: 0 0 6px black;
+						background-color: #755e00;
+						display:block;
+						margin:auto;}
+			body {background-color:}	
+	</style>
+</head>
+<body style="overflow:hidden;">
+<header> The Singing Arc, 1899 <a href="http://synthmuseum.thefunnybrain.com/telharmonium.html">Next</a></header>
+
+<div style="position:fixed; left:0; z-index:200; background-color:#663333">
+	<canvas id="myCanvas" width="500" height="325" style="border:1px solid #d3d3d3;"></canvas><br>
+	<button id="clearDrawButton">Clear Canvas</button>
+	<button id="pattern1Button">Rhythmicon Original</button>
+	<button id="pattern2Button">Pattern 2</button>
+	<button id="customPatternButton">Custom Pattern</button>
+</div>
+
+<div id="discDiv" style="margin:auto; text-align:center; top:500" onmousedown="discClick()" onmouseup="discRelease()" onmousemove="discDrag(event)" onmouseleave="discRelease()">
+	
+	<img src="img/newDisc.png" style="-moz-user-select: none;
+	-webkit-user-drag: none; width:50%"></img></div>
+
+
+<div style="bottom:0; position:fixed">
+	<div id="RhythmiconPianoDiv"></div>
+	<div id="RhythmiconPianoDiv2" style="display:none"></div>
+	<div style="display:inline-block;">
+		<div id="tempoSliderDiv"></div>
+	Change the speed of the Spinning Disc.
+	</div>
+	<button id= "toggleStateButton" style="display:inline-block;" onclick="toggleFunction()">Piano Toggle Mode</button>
+	<button id="rescalePageButton" style="text-align:center;margin:auto" onclick="location.reload()">Rescale the page</button>
+</div>
+<script src="https://rawgit.com/nexus-js/ui/master/dist/NexusUI.js"></script>
+<script>
+var mainWidth = window.innerWidth;
+var mainHeight = window.innerHeight;
+var pianoWidth = window.mainWidth - 50;
+var pianoHeight = (mainWidth * 0.2);
+
+var audio_context = window.AudioContext || window.webkitAudioContext;
+var con = new audio_context();
+makeSoundHappen();
+
+var c = document.getElementById("myCanvas");
+var ctx = c.getContext("2d");
+ctx.fillStyle = "red";
+/////////////////////////Sound
+	  
+function makeSoundHappen(){
+gain1 = con.createGain();
+osc1 = con.createOscillator();
+osc1.connect(gain1);
+osc1.frequency.value = 32.70;
+gain1.connect(con.destination);
+osc1.start(1);
+
+gain2 = con.createGain();
+osc2 = con.createOscillator();
+osc2.connect(gain2);
+osc2.frequency.value = 65.41;
+gain2.connect(con.destination);
+osc2.start(1);
+
+gain3 = con.createGain();
+osc3 = con.createOscillator();
+osc3.connect(gain3);
+osc3.frequency.value = 98.00;
+gain3.connect(con.destination);
+osc3.start(1);
+
+gain4 = con.createGain();
+osc4 = con.createOscillator();
+osc4.connect(gain4);
+osc4.frequency.value = 130.81;
+gain4.connect(con.destination);
+osc4.start(1);
+
+gain5 = con.createGain();
+osc5 = con.createOscillator();
+osc5.connect(gain5);
+osc5.frequency.value = 164.81;
+gain5.connect(con.destination);
+osc5.start(1);
+
+gain6 = con.createGain();
+osc6 = con.createOscillator();
+osc6.connect(gain6);
+osc6.frequency.value = 196.00;
+gain6.connect(con.destination);
+osc6.start(1);
+
+gain7 = con.createGain();
+osc7 = con.createOscillator();
+osc7.connect(gain7);
+osc7.frequency.value = 233.08;
+gain7.connect(con.destination);
+osc7.start(1);
+
+gain8 = con.createGain();
+osc8 = con.createOscillator();
+osc8.connect(gain8);
+osc8.frequency.value = 261.63;
+gain8.connect(con.destination);
+osc8.start(1);
+
+gain9 = con.createGain();
+osc9 = con.createOscillator();
+osc9.connect(gain9);
+osc9.frequency.value = 293.66;
+gain9.connect(con.destination);
+osc9.start(1);
+
+gain10 = con.createGain();
+osc10 = con.createOscillator();
+osc10.connect(gain10);
+osc10.frequency.value = 329.63;
+gain10.connect(con.destination);
+osc10.start(1);
+
+gain11 = con.createGain();
+osc11 = con.createOscillator();
+osc11.connect(gain11);
+osc11.frequency.value = 369.99;
+gain11.connect(con.destination);
+osc11.start(1);
+
+gain12 = con.createGain();
+osc12 = con.createOscillator();
+osc12.connect(gain12);
+osc12.frequency.value = 392.00;
+gain12.connect(con.destination);
+osc12.start(1);
+
+gain13 = con.createGain();
+osc13 = con.createOscillator();
+osc13.connect(gain13);
+osc13.frequency.value = 415.30;
+gain13.connect(con.destination);
+osc13.start(1);
+
+gain14 = con.createGain();
+osc14 = con.createOscillator();
+osc14.connect(gain14);
+osc14.frequency.value = 466.16;
+gain14.connect(con.destination);
+osc14.start(1);
+
+gain15 = con.createGain();
+osc15 = con.createOscillator();
+osc15.connect(gain15);
+osc15.frequency.value = 493.88;
+gain15.connect(con.destination);
+osc15.start(1);
+
+gain16 = con.createGain();
+osc16 = con.createOscillator();
+osc16.connect(gain16);
+osc16.frequency.value = 523.25;
+gain16.connect(con.destination);
+osc16.start(1);
+
+}
+
+var octaveChoice = 1;
+octaveChoiceFunction();
+
+function octaveChoiceFunction(){
+	 osc1.frequency.value *= octaveChoice;
+	 osc2.frequency.value *= octaveChoice;
+	 osc3.frequency.value *= octaveChoice;
+	 osc4.frequency.value *= octaveChoice;
+
+	 osc5.frequency.value *= octaveChoice;
+	 osc6.frequency.value *= octaveChoice;
+	 osc7.frequency.value *= octaveChoice;
+	 osc8.frequency.value *= octaveChoice;
+
+	 osc9.frequency.value *= octaveChoice;
+	 osc10.frequency.value *= octaveChoice;
+	 osc11.frequency.value *= octaveChoice;
+	 osc12.frequency.value *= octaveChoice;
+
+	 osc13.frequency.value *= octaveChoice;
+	 osc14.frequency.value *= octaveChoice;
+	 osc15.frequency.value *= octaveChoice;
+	 osc16.frequency.value *= octaveChoice;	 
+	 
+}
+
+//////////Drawing Content
+
+// http://www.williammalone.com/articles/create-html5-canvas-javascript-drawing-app/
+
+var clearDrawingButton = document.getElementById('clearDrawButton');
+
+var paint = false;
+
+drawOriginalPattern();
+c.addEventListener("mousedown", drawingOn);
+c.addEventListener("mouseup", drawingOff);
+c.addEventListener("mouseleave", drawingOff);
+c.addEventListener("mouseleave", drawingOff);
+
+function drawingOn(e){
+	var rect = ctx.canvas.getBoundingClientRect();
+	
+  var mouseX = e.clientX - rect.left;
+  var mouseY = e.clientY - rect.top;
+  paint = true;
+  addClick(e.clientX - rect.left, e.clientY - rect.top);
+  redraw();
+};
+
+function drawingOff(e){
+paint = false;
+}
+
+var clickX = new Array();
+var clickY = new Array();
+var clickDrag = new Array();
+///////////////////////////////////////////
+function addClick(x, y, dragging)
+{
+  clickX.push(x);
+  clickY.push(y);
+  clickDrag.push(dragging);
+}
+
+function redraw(){
+  ctx.clearRect(0, 5, ctx.canvas.width, ctx.canvas.height); // Clears the canvas
+  
+  
+  ctx.strokeStyle = "#df4b26";
+  ctx.lineJoin = "round";
+  ctx.lineWidth = 5;
+			
+  for(var i=0; i < clickX.length; i++) {		
+    ctx.beginPath();
+    if(clickDrag[i] && i){
+      ctx.moveTo(clickX[i-1], clickY[i-1]);
+     }else{
+       ctx.moveTo(clickX[i]-1, clickY[i]);
+     }
+     ctx.lineTo(clickX[i], clickY[i]);
+     ctx.closePath();
+     ctx.stroke();
+  }
+  ctx.clearRect(0, 0, 5, ctx.canvas.height);
+  fillNoteLines();
+  //circleUpdate();
+}
+
+	clearDrawingButton.onmousedown = function(event)
+	{
+		clearCanvas();
+	}
+// draw patterns in
+var pattern1Press = document.getElementById('pattern1Button');
+pattern1Press.onmousedown = function(event)
+	{
+	
+	drawOriginalPattern();
+	
+	}
+	
+function drawOriginalPattern(){
+clearCanvas();
+	console.log(ctx.canvas.width);
+	for (var i = 0; i < ctx.canvas.width; i = i + ctx.canvas.width / 1){
+	ctx.fillRect(i + 10, 320, 5, 5);
+	}
+	for (var i = 0; i < ctx.canvas.width; i = i + ctx.canvas.width / 2){
+	ctx.fillRect(i + 10, 300, 5, 5);
+	}
+	for (var i = 0; i < ctx.canvas.width; i = i + ctx.canvas.width / 3){
+	ctx.fillRect(i + 10, 280, 5, 5);
+	}
+	for (var i = 0; i < ctx.canvas.width; i = i + ctx.canvas.width / 4){
+	ctx.fillRect(i + 10, 260, 5, 5);
+	}
+	for (var i = 0; i < ctx.canvas.width; i = i + ctx.canvas.width / 5){
+	ctx.fillRect(i + 10, 240, 5, 5);
+	}
+	for (var i = 0; i < ctx.canvas.width; i = i + ctx.canvas.width / 6){
+	ctx.fillRect(i + 10, 220, 5, 5);
+	}
+	for (var i = 0; i < ctx.canvas.width; i = i + ctx.canvas.width / 7){
+	ctx.fillRect(i + 10, 200, 5, 5);
+	}
+	for (var i = 0; i < ctx.canvas.width; i = i + ctx.canvas.width / 8){
+	ctx.fillRect(i + 10, 180, 5, 5);
+	}
+	for (var i = 0; i < ctx.canvas.width; i = i + ctx.canvas.width / 9){
+	ctx.fillRect(i + 10, 160, 5, 5);
+	}
+	for (var i = 0; i < ctx.canvas.width; i = i + ctx.canvas.width / 10){
+	ctx.fillRect(i + 10, 140, 5, 5);
+	}
+	for (var i = 0; i < ctx.canvas.width; i = i + ctx.canvas.width / 11){
+	ctx.fillRect(i + 10, 120, 5, 5);
+	}
+	for (var i = 0; i < ctx.canvas.width; i = i + ctx.canvas.width / 12){
+	ctx.fillRect(i + 10, 100, 5, 5);
+	}
+	for (var i = 0; i < ctx.canvas.width; i = i + ctx.canvas.width / 13){
+	ctx.fillRect(i + 10, 80, 5, 5);
+	}
+	for (var i = 0; i < ctx.canvas.width; i = i + ctx.canvas.width / 14){
+	ctx.fillRect(i + 10, 60, 5, 5);
+	}
+	for (var i = 0; i < ctx.canvas.width; i = i + ctx.canvas.width / 15){
+	ctx.fillRect(i + 10, 40, 5, 5);
+	}
+	for (var i = 0; i < ctx.canvas.width; i = i + ctx.canvas.width / 16){
+	ctx.fillRect(i + 10, 20, 5, 5);
+	}	
+}
+	
+var pattern2Press = document.getElementById('pattern2Button');
+pattern2Press.onmousedown = function(event)
+	{
+	clearCanvas();
+	console.log(ctx.canvas.width);
+	for (var i = 0; i < ctx.canvas.width; i = i + ctx.canvas.width / 1){
+	ctx.fillRect(i + 10, 20, 5, 5);
+	}
+	for (var i = 0; i < ctx.canvas.width; i = i + ctx.canvas.width / 2){
+	ctx.fillRect(i + 10, 40, 5, 5);
+	}
+	for (var i = 0; i < ctx.canvas.width; i = i + ctx.canvas.width / 3){
+	ctx.fillRect(i + 10, 60, 5, 5);
+	}
+	for (var i = 0; i < ctx.canvas.width; i = i + ctx.canvas.width / 4){
+	ctx.fillRect(i + 10, 80, 5, 5);
+	}
+	for (var i = 0; i < ctx.canvas.width; i = i + ctx.canvas.width / 5){
+	ctx.fillRect(i + 10, 100, 5, 5);
+	}
+	for (var i = 0; i < ctx.canvas.width; i = i + ctx.canvas.width / 6){
+	ctx.fillRect(i + 10, 120, 5, 5);
+	}
+	for (var i = 0; i < ctx.canvas.width; i = i + ctx.canvas.width / 7){
+	ctx.fillRect(i + 10, 140, 5, 5);
+	}
+	for (var i = 0; i < ctx.canvas.width; i = i + ctx.canvas.width / 8){
+	ctx.fillRect(i + 10, 160, 5, 5);
+	}
+	for (var i = 0; i < ctx.canvas.width; i = i + ctx.canvas.width / 9){
+	ctx.fillRect(i + 10, 180, 5, 5);
+	}
+	for (var i = 0; i < ctx.canvas.width; i = i + ctx.canvas.width / 10){
+	ctx.fillRect(i + 10, 200, 5, 5);
+	}
+	for (var i = 0; i < ctx.canvas.width; i = i + ctx.canvas.width / 11){
+	ctx.fillRect(i + 10, 220, 5, 5);
+	}
+	for (var i = 0; i < ctx.canvas.width; i = i + ctx.canvas.width / 12){
+	ctx.fillRect(i + 10, 240, 5, 5);
+	}
+	for (var i = 0; i < ctx.canvas.width; i = i + ctx.canvas.width / 13){
+	ctx.fillRect(i + 10, 260, 5, 5);
+	}
+	for (var i = 0; i < ctx.canvas.width; i = i + ctx.canvas.width / 14){
+	ctx.fillRect(i + 10, 280, 5, 5);
+	}
+	for (var i = 0; i < ctx.canvas.width; i = i + ctx.canvas.width / 15){
+	ctx.fillRect(i + 10, 300, 5, 5);
+	}
+	for (var i = 0; i < ctx.canvas.width; i = i + ctx.canvas.width / 16){
+	ctx.fillRect(i + 10, 320, 5, 5);
+	}	
+	}
+	
+var customPatternPress = document.getElementById('customPatternButton');
+customPatternPress.onmousedown = function(event)
+	{
+	clearCanvas();
+	}
+
+function clearCanvas(){
+	ctx.clearRect(5, 5, ctx.canvas.width, ctx.canvas.height);
+	clickX = [];
+	clickY = [];
+	clickDrag = [];
+}
+
+
+//
+	
+///////////////////////////////////////////////////
+c.addEventListener("mousemove",mouseMoved);
+
+function mouseMoved(e){
+  if(paint){
+  var rect = ctx.canvas.getBoundingClientRect();
+    addClick(e.clientX - rect.left, e.clientY - rect.top, true);
+    redraw();
+  }
+};
+///////////////
+/*
+//test populating
+ctx.fillRect(10, 20, 5, 10);
+ctx.fillRect(120, 20, 10, 10);
+ctx.fillRect(150, 20, 16, 10);
+ctx.fillRect(270, 20, 2, 10);
+//test row 2
+ctx.fillRect(40, 60, 10, 10);
+ctx.fillRect(70, 60, 13, 10);
+ctx.fillRect(200, 60, 20, 10);
+ctx.fillRect(250, 60, 2, 10);
+*/
+
+var imgData = ctx.getImageData(0, 10, 10, 140);
+red = imgData.data[0];
+green = imgData.data[1];
+blue = imgData.data[2];
+alpha = imgData.data[3];
+
+fillNoteLines();
+
+function fillNoteLines(){
+ 
+ ctx.fillRect(0, 20, 5, 5);
+ ctx.fillRect(0, 40, 5, 5);
+ ctx.fillRect(0, 60, 5, 5);
+ ctx.fillRect(0, 80, 5, 5);
+ ctx.fillRect(0, 100, 5, 5);
+ ctx.fillRect(0, 120, 5, 5);
+ ctx.fillRect(0, 140, 5, 5);
+ ctx.fillRect(0, 160, 5, 5);
+ ctx.fillRect(0, 180, 5, 5);
+ ctx.fillRect(0, 200, 5, 5);
+ ctx.fillRect(0, 220, 5, 5);
+ ctx.fillRect(0, 240, 5, 5);
+ ctx.fillRect(0, 260, 5, 5);
+ ctx.fillRect(0, 280, 5, 5);
+ ctx.fillRect(0, 300, 5, 5);
+ ctx.fillRect(0, 320, 5, 5); 
+}
+
+var buttonPiano = new Nexus.Piano('#RhythmiconPianoDiv',{'lowNote' : 12, 'highNote' : 29,'mode': 'button', 'size':[pianoWidth,pianoHeight]})
+var togglePiano = new Nexus.Piano('#RhythmiconPianoDiv2',{'lowNote' : 12, 'highNote' : 29,'mode': 'toggle', 'size':[pianoWidth,pianoHeight]})
+
+
+var toggleState = false;
+
+var toggleStateButtonClick = document.getElementById('toggleStateButton');
+
+function toggleFunction(){
+	toggleState = !toggleState;
+	if(toggleState === true){
+		document.getElementById("RhythmiconPianoDiv2").style.display = "block";
+		document.getElementById("RhythmiconPianoDiv").style.display = "none";
+		var pressedList = [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false];
+		var pressedToggleReadyList = [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false];
+			for (var i = 0; i < 16; i++){
+				togglePiano.toggleIndex(i, pressedList[i]);
+			}
+	}
+	else if(toggleState === false){
+		document.getElementById("RhythmiconPianoDiv").style.display = "block";
+		document.getElementById("RhythmiconPianoDiv2").style.display = "none";	
+		var pressedList = [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false];
+		var pressedToggleReadyList = [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false];
+			for (var i = 0; i < 16; i++){
+				buttonPiano.toggleIndex(i, pressedList[i]);
+			}
+	}
+	console.log(toggleState);
+
+			
+}
+
+
+
+var pressedList = [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false];
+var pressedToggleReadyList = [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false];
+
+
+
+
+document.addEventListener('keydown', (event) => {
+			if(toggleState === true){
+			switch(event.key) {
+				case "q":
+					if(pressedList[0] === false && pressedToggleReadyList[0] === false){
+						console.log("Toggle mode, Pressed List: " + pressedList);
+						pressedList[0] = true;
+						pressedToggleReadyList[0] = true;
+						console.log("Toggle mode, Pressed List: " + pressedList);
+						
+					}
+					else if(pressedList[0] === true && pressedToggleReadyList[0] === false){
+						
+						pressedList[0] = false;
+						pressedToggleReadyList[0] = true;
+						
+					}
+					else{
+					return;
+					}
+					break;
+					case "w":
+					if(pressedList[1] === false && pressedToggleReadyList[1] === false){
+						console.log("Toggle mode, Pressed List: " + pressedList);
+						pressedList[1] = true;
+						pressedToggleReadyList[1] = true;
+						console.log("Toggle mode, Pressed List: " + pressedList);
+						
+					}
+					else if(pressedList[1] === true && pressedToggleReadyList[1] === false){
+						
+						pressedList[1] = false;
+						pressedToggleReadyList[1] = true;
+						
+					}
+					else{
+					return;
+					}
+					break;
+					case "e":
+					if(pressedList[2] === false && pressedToggleReadyList[2] === false){
+						console.log("Toggle mode, Pressed List: " + pressedList);
+						pressedList[2] = true;
+						pressedToggleReadyList[2] = true;
+						console.log("Toggle mode, Pressed List: " + pressedList);
+						
+					}
+					else if(pressedList[2] === true && pressedToggleReadyList[2] === false){
+						
+						pressedList[2] = false;
+						pressedToggleReadyList[2] = true;
+						
+					}
+					else{
+					return;
+					}
+					break;					
+					case "r":
+					if(pressedList[3] === false && pressedToggleReadyList[3] === false){
+						console.log("Toggle mode, Pressed List: " + pressedList);
+						pressedList[3] = true;
+						pressedToggleReadyList[3] = true;
+						console.log("Toggle mode, Pressed List: " + pressedList);
+						
+					}
+					else if(pressedList[3] === true && pressedToggleReadyList[3] === false){
+						
+						pressedList[3] = false;
+						pressedToggleReadyList[3] = true;
+						
+					}
+					else{
+					return;
+					}
+					break;					
+					case "t":
+					if(pressedList[4] === false && pressedToggleReadyList[4] === false){
+						console.log("Toggle mode, Pressed List: " + pressedList);
+						pressedList[4] = true;
+						pressedToggleReadyList[4] = true;
+						console.log("Toggle mode, Pressed List: " + pressedList);
+						
+					}
+					else if(pressedList[4] === true && pressedToggleReadyList[4] === false){
+						
+						pressedList[4] = false;
+						pressedToggleReadyList[4] = true;
+						
+					}
+					else{
+					return;
+					}
+					break;					
+					case "y":
+					if(pressedList[5] === false && pressedToggleReadyList[5] === false){
+						console.log("Toggle mode, Pressed List: " + pressedList);
+						pressedList[5] = true;
+						pressedToggleReadyList[5] = true;
+						console.log("Toggle mode, Pressed List: " + pressedList);
+						
+					}
+					else if(pressedList[5] === true && pressedToggleReadyList[5] === false){
+						
+						pressedList[5] = false;
+						pressedToggleReadyList[5] = true;
+						
+					}
+					else{
+					return;
+					}
+					break;					
+					case "a":
+					if(pressedList[6] === false && pressedToggleReadyList[6] === false){
+						console.log("Toggle mode, Pressed List: " + pressedList);
+						pressedList[6] = true;
+						pressedToggleReadyList[6] = true;
+						console.log("Toggle mode, Pressed List: " + pressedList);
+						
+					}
+					else if(pressedList[6] === true && pressedToggleReadyList[6] === false){
+						
+						pressedList[6] = false;
+						pressedToggleReadyList[6] = true;
+						
+					}
+					else{
+					return;
+					}
+					break;	
+					case "s":
+					if(pressedList[7] === false && pressedToggleReadyList[7] === false){
+						console.log("Toggle mode, Pressed List: " + pressedList);
+						pressedList[7] = true;
+						pressedToggleReadyList[7] = true;
+						console.log("Toggle mode, Pressed List: " + pressedList);
+						
+					}
+					else if(pressedList[7] === true && pressedToggleReadyList[7] === false){
+						
+						pressedList[7] = false;
+						pressedToggleReadyList[7] = true;
+						
+					}
+					else{
+					return;
+					}
+					break;
+					case "d":
+					if(pressedList[8] === false && pressedToggleReadyList[8] === false){
+						console.log("Toggle mode, Pressed List: " + pressedList);
+						pressedList[8] = true;
+						pressedToggleReadyList[8] = true;
+						console.log("Toggle mode, Pressed List: " + pressedList);
+						
+					}
+					else if(pressedList[8] === true && pressedToggleReadyList[8] === false){
+						
+						pressedList[8] = false;
+						pressedToggleReadyList[8] = true;
+						
+					}
+					else{
+					return;
+					}
+					break;
+					case "f":
+					if(pressedList[9] === false && pressedToggleReadyList[9] === false){
+						console.log("Toggle mode, Pressed List: " + pressedList);
+						pressedList[9] = true;
+						pressedToggleReadyList[9] = true;
+						console.log("Toggle mode, Pressed List: " + pressedList);
+						
+					}
+					else if(pressedList[9] === true && pressedToggleReadyList[9] === false){
+						
+						pressedList[9] = false;
+						pressedToggleReadyList[9] = true;
+						
+					}
+					else{
+					return;
+					}
+					break;
+					case "g":
+					if(pressedList[10] === false && pressedToggleReadyList[10] === false){
+						console.log("Toggle mode, Pressed List: " + pressedList);
+						pressedList[10] = true;
+						pressedToggleReadyList[10] = true;
+						console.log("Toggle mode, Pressed List: " + pressedList);
+						
+					}
+					else if(pressedList[10] === true && pressedToggleReadyList[10] === false){
+						
+						pressedList[10] = false;
+						pressedToggleReadyList[10] = true;
+						
+					}
+					else{
+					return;
+					}
+					break;
+					case "z":
+					if(pressedList[11] === false && pressedToggleReadyList[11] === false){
+						console.log("Toggle mode, Pressed List: " + pressedList);
+						pressedList[11] = true;
+						pressedToggleReadyList[11] = true;
+						console.log("Toggle mode, Pressed List: " + pressedList);
+						
+					}
+					else if(pressedList[11] === true && pressedToggleReadyList[11] === false){
+						
+						pressedList[11] = false;
+						pressedToggleReadyList[11] = true;
+						
+					}
+					else{
+					return;
+					}
+					break;
+					case "x":
+					if(pressedList[12] === false && pressedToggleReadyList[12] === false){
+						console.log("Toggle mode, Pressed List: " + pressedList);
+						pressedList[12] = true;
+						pressedToggleReadyList[12] = true;
+						console.log("Toggle mode, Pressed List: " + pressedList);
+						
+					}
+					else if(pressedList[12] === true && pressedToggleReadyList[12] === false){
+						
+						pressedList[12] = false;
+						pressedToggleReadyList[12] = true;
+						
+					}
+					else{
+					return;
+					}
+					break;
+					case "c":
+					if(pressedList[13] === false && pressedToggleReadyList[13] === false){
+						console.log("Toggle mode, Pressed List: " + pressedList);
+						pressedList[13] = true;
+						pressedToggleReadyList[13] = true;
+						console.log("Toggle mode, Pressed List: " + pressedList);
+						
+					}
+					else if(pressedList[13] === true && pressedToggleReadyList[13] === false){
+						
+						pressedList[13] = false;
+						pressedToggleReadyList[13] = true;
+						
+					}
+					else{
+					return;
+					}
+					break;
+					case "v":
+					if(pressedList[14] === false && pressedToggleReadyList[14] === false){
+						console.log("Toggle mode, Pressed List: " + pressedList);
+						pressedList[14] = true;
+						pressedToggleReadyList[14] = true;
+						console.log("Toggle mode, Pressed List: " + pressedList);
+						
+					}
+					else if(pressedList[14] === true && pressedToggleReadyList[14] === false){
+						
+						pressedList[14] = false;
+						pressedToggleReadyList[14] = true;
+						
+					}
+					else{
+					return;
+					}
+					break;					
+					case "b":
+					if(pressedList[15] === false && pressedToggleReadyList[15] === false){
+						console.log("Toggle mode, Pressed List: " + pressedList);
+						pressedList[15] = true;
+						pressedToggleReadyList[15] = true;
+						console.log("Toggle mode, Pressed List: " + pressedList);
+						
+					}
+					else if(pressedList[15] === true && pressedToggleReadyList[15] === false){
+						
+						pressedList[15] = false;
+						pressedToggleReadyList[15] = true;
+						
+					}
+					else{
+					return;
+					}
+					break;
+
+					
+					default:
+						break
+					}
+			}
+
+			else if(toggleState === false){
+			  switch(event.key) {
+				case "q":
+				
+					if(pressedList[0] === false){
+					
+					pressedList[0] = true;
+					
+					}
+					else{
+					return;
+					}
+					break;
+				case "w":
+					if(pressedList[1] === false){
+					
+					pressedList[1] = true;
+					
+					}
+					else{
+					return;
+					}
+					break;
+				case "e":
+					if(pressedList[2] === false){
+					
+					pressedList[2] = true;
+					
+					}
+					else{
+					return;
+					}
+					break;
+				case "r":
+					if(pressedList[3] === false){
+					
+					pressedList[3] = true;
+					
+					}
+					else{
+					return;
+					}
+					break;
+				case "t":
+					if(pressedList[4] === false){
+					
+					pressedList[4] = true;
+					
+					}
+					else{
+					return;
+					}
+					break;
+				case "y":
+					if(pressedList[5] === false){
+					
+					pressedList[5] = true;
+					
+					}
+					else{
+					return;
+					}
+					break;
+				case "a":
+					if(pressedList[6] === false){
+					
+					pressedList[6] = true;
+					
+					}
+					else{
+					return;
+					}
+					break;
+				case "s":
+					if(pressedList[7] === false){
+					
+					pressedList[7] = true;
+					
+					}
+					else{
+					return;
+					}
+					break;
+				case "d":
+					if(pressedList[8] === false){
+					
+					pressedList[8] = true;
+					
+					}
+					else{
+					return;
+					}
+					break;
+				case "f":
+					if(pressedList[9] === false){
+					
+					pressedList[9] = true;
+					
+					}
+					else{
+					return;
+					}
+					break;
+				case "g":
+					if(pressedList[10] === false){
+					
+					pressedList[10] = true;
+					
+					}
+					else{
+					return;
+					}
+					break;
+				case "z":
+					if(pressedList[11] === false){
+					
+					pressedList[11] = true;
+					
+					}
+					else{
+					return;
+					}
+					break;
+				case "x":
+					if(pressedList[12] === false){
+					
+					pressedList[12] = true;
+					
+					}
+					else{
+					return;
+					}
+					break;
+				case "c":
+					if(pressedList[13] === false){
+					
+					pressedList[13] = true;
+					
+					}
+					else{
+					return;
+					}
+					break;
+				case "v":
+					if(pressedList[14] === false){
+					
+					pressedList[14] = true;
+					
+					}
+					else{
+					return;
+					}
+					break;
+				case "b":
+					if(pressedList[15] === false){
+					
+					pressedList[15] = true;
+					
+					}
+					else{
+					return;
+					}
+					break;
+				default:
+					break;
+			}
+			}
+
+			for (var i = 0; i < 16; i++){
+				buttonPiano.toggleIndex(i, pressedList[i]);
+			}
+			for (var i = 0; i < 16; i++){
+				togglePiano.toggleIndex(i, pressedList[i]);
+			}
+	});
+	// DESIRED BEHAVIOUR: 
+		//TOGGLE OFF - ON KEYDOWN NOTE TRUE, ON KEYUP NOTE FALSE
+		//TOGGLE ON - ON KEYDOWN NOTE TRUE, ON KEYDOWN AND NOTE ALREADY TRUE NOTE FALSE
+		
+	// OR
+		// TOGGLE ON - ON KEYDOWN NOTE TRUE, ON KEYDOWN AND NOTE TOGGLE READY BOOL TRUE NOTE FALSE, THEN RESET READY TO FALSE
+		// TOGGLE ON - ON KEYDOWN NOTE TRUE, ON KEYDOWN AND NOTE TOGGLE READY BOOL TRUE NOTE FALSE, THEN RESET READY TO FALSE
+	
+
+document.addEventListener('keyup', (event) => {
+		if (toggleState == false){
+			  switch(event.key) {
+				case "q":
+					if(pressedList[0] === true){
+						
+						pressedList[0] = false;
+						
+					}					
+					else{
+					return;
+					}
+					break;
+				case "w":
+					if(pressedList[1] === true){
+					
+					pressedList[1] = false;
+					
+					}
+					else{
+					return;
+					}
+					break;
+				case "e":
+					if(pressedList[2] === true){
+					
+					pressedList[2] = false;
+					
+					}
+					else{
+					return;
+					}
+					break;
+				case "r":
+					if(pressedList[3] === true){
+					
+					pressedList[3] = false;
+					
+					}
+					else{
+					return;
+					}
+					break;
+				case "t":
+					if(pressedList[4] === true){
+					
+					pressedList[4] = false;
+					
+					}
+					else{
+					return;
+					}
+					break;
+				case "y":
+					if(pressedList[5] === true){
+					
+					pressedList[5] = false;
+					
+					}
+					else{
+					return;
+					}
+					break;
+				case "a":
+					if(pressedList[6] === true){
+					
+					pressedList[6] = false;
+					
+					}
+					else{
+					return;
+					}
+					break;
+				case "s":
+					if(pressedList[7] === true){
+					
+					pressedList[7] = false;
+					
+					}
+					else{
+					return;
+					}
+					break;
+				case "d":
+					if(pressedList[8] === true){
+					
+					pressedList[8] = false;
+					
+					}
+					else{
+					return;
+					}
+					break;
+				case "f":
+					if(pressedList[9] === true){
+					
+					pressedList[9] = false;
+					
+					}
+					else{
+					return;
+					}
+					break;
+				case "g":
+					if(pressedList[10] === true){
+					
+					pressedList[10] = false;
+					
+					}
+					else{
+					return;
+					}
+					break;
+				case "z":
+					if(pressedList[11] === true){
+					
+					pressedList[11] = false;
+					
+					}
+					else{
+					return;
+					}
+					break;
+				case "x":
+					if(pressedList[12] === true){
+					
+					pressedList[12] = false;
+					
+					}
+					else{
+					return;
+					}
+					break;
+				case "c":
+					if(pressedList[13] === true){
+					
+					pressedList[13] = false;
+					
+					}
+					else{
+					return;
+					}
+					break;
+				case "v":
+					if(pressedList[14] === true){
+					
+					pressedList[14] = false;
+					
+					}
+					else{
+					return;
+					}
+					break;
+				case "b":
+					if(pressedList[15] === true){
+					
+					pressedList[15] = false;
+					
+					}
+					else{
+					return;
+					}
+					break;
+				default:
+					break;
+			} }
+			
+		else if (toggleState === true){
+			switch(event.key) {
+				case "q":
+					if(pressedToggleReadyList[0] === true){
+						console.log("Toggle mode, Pressed List: " + pressedList);
+						pressedToggleReadyList[0] = false;
+						console.log("Toggle mode, Pressed List: " + pressedList);
+					}
+					else{
+					return;
+					}
+					break;
+				case "w":
+					if(pressedToggleReadyList[1] === true){
+						console.log("Toggle mode, Pressed List: " + pressedList);
+						pressedToggleReadyList[1] = false;
+						console.log("Toggle mode, Pressed List: " + pressedList);
+					}
+					else{
+					return;
+					}
+					break;					
+				case "e":
+					if(pressedToggleReadyList[2] === true){
+						console.log("Toggle mode, Pressed List: " + pressedList);
+						pressedToggleReadyList[2] = false;
+						console.log("Toggle mode, Pressed List: " + pressedList);
+					}
+					else{
+					return;
+					}
+					break;						
+				case "r":
+					if(pressedToggleReadyList[3] === true){
+						console.log("Toggle mode, Pressed List: " + pressedList);
+						pressedToggleReadyList[3] = false;
+						console.log("Toggle mode, Pressed List: " + pressedList);
+					}
+					else{
+					return;
+					}
+					break;						
+				case "t":
+					if(pressedToggleReadyList[4] === true){
+						console.log("Toggle mode, Pressed List: " + pressedList);
+						pressedToggleReadyList[4] = false;
+						console.log("Toggle mode, Pressed List: " + pressedList);
+					}
+					else{
+					return;
+					}
+					break;						
+				case "y":
+					if(pressedToggleReadyList[5] === true){
+						console.log("Toggle mode, Pressed List: " + pressedList);
+						pressedToggleReadyList[5] = false;
+						console.log("Toggle mode, Pressed List: " + pressedList);
+					}
+					else{
+					return;
+					}
+					break;						
+				case "a":
+					if(pressedToggleReadyList[6] === true){
+						console.log("Toggle mode, Pressed List: " + pressedList);
+						pressedToggleReadyList[6] = false;
+						console.log("Toggle mode, Pressed List: " + pressedList);
+					}
+					else{
+					return;
+					}
+					break;						
+				case "s":
+					if(pressedToggleReadyList[7] === true){
+						console.log("Toggle mode, Pressed List: " + pressedList);
+						pressedToggleReadyList[7] = false;
+						console.log("Toggle mode, Pressed List: " + pressedList);
+					}
+					else{
+					return;
+					}
+					break;						
+				case "d":
+					if(pressedToggleReadyList[8] === true){
+						console.log("Toggle mode, Pressed List: " + pressedList);
+						pressedToggleReadyList[8] = false;
+						console.log("Toggle mode, Pressed List: " + pressedList);
+					}
+					else{
+					return;
+					}
+					break;						
+				case "f":
+					if(pressedToggleReadyList[9] === true){
+						console.log("Toggle mode, Pressed List: " + pressedList);
+						pressedToggleReadyList[9] = false;
+						console.log("Toggle mode, Pressed List: " + pressedList);
+					}
+					else{
+					return;
+					}
+					break;	
+				case "g":
+					if(pressedToggleReadyList[10] === true){
+						console.log("Toggle mode, Pressed List: " + pressedList);
+						pressedToggleReadyList[10] = false;
+						console.log("Toggle mode, Pressed List: " + pressedList);
+					}
+					else{
+					return;
+					}
+					break;	
+				case "z":
+					if(pressedToggleReadyList[11] === true){
+						console.log("Toggle mode, Pressed List: " + pressedList);
+						pressedToggleReadyList[11] = false;
+						console.log("Toggle mode, Pressed List: " + pressedList);
+					}
+					else{
+					return;
+					}
+					break;	
+
+				case "x":
+					if(pressedToggleReadyList[12] === true){
+						console.log("Toggle mode, Pressed List: " + pressedList);
+						pressedToggleReadyList[12] = false;
+						console.log("Toggle mode, Pressed List: " + pressedList);
+					}
+					else{
+					return;
+					}
+					break;	
+				case "c":
+					if(pressedToggleReadyList[13] === true){
+						console.log("Toggle mode, Pressed List: " + pressedList);
+						pressedToggleReadyList[13] = false;
+						console.log("Toggle mode, Pressed List: " + pressedList);
+					}
+					else{
+					return;
+					}
+					break;	
+				case "v":
+					if(pressedToggleReadyList[14] === true){
+						console.log("Toggle mode, Pressed List: " + pressedList);
+						pressedToggleReadyList[14] = false;
+						console.log("Toggle mode, Pressed List: " + pressedList);
+					}
+					else{
+					return;
+					}
+					break;	
+				case "b":
+					if(pressedToggleReadyList[15] === true){
+						console.log("Toggle mode, Pressed List: " + pressedList);
+						pressedToggleReadyList[15] = false;
+						console.log("Toggle mode, Pressed List: " + pressedList);
+					}
+					else{
+					return;
+					}
+					break;	
+					
+					default:
+						break;					
+					}
+
+		}
+			for (var i = 0; i < 16; i++){
+				buttonPiano.toggleIndex(i, pressedList[i]);
+			}
+			for (var i = 0; i < 16; i++){
+				togglePiano.toggleIndex(i, pressedList[i]);
+			}
+		}
+	) ;
+
+buttonPiano.on('change',function(v) {
+//console.log(buttonPiano);
+if(pressedList[v.note-12] !== v.state){
+  pressedList[v.note-12] = v.state;
+  }
+});
+
+togglePiano.on('change',function(v) {
+//console.log(togglePiano);
+if(pressedList[v.note-12] !== v.state){
+  pressedList[v.note-12] = v.state;
+  }
+});
+
+tempoVal = 40;
+
+var tempoSlider = new Nexus.Slider('#tempoSliderDiv',{
+	'min':10,
+	'max': 180,
+	'value':50,
+})
+tempoSlider.on('change',function(v){
+	tempoVal = v
+	console.log(tempoVal);
+	});
+
+var step = 5;
+
+var discStyle = document.getElementById("discDiv");
+
+var discClicked = false;
+
+Number.prototype.map = function (in_min, in_max, out_min, out_max) {
+  return (this - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+}
+
+function discClick(event){
+	discClicked = true;
+}
+
+function discRelease(event){
+	discClicked = false;
+	mouseStepMod = 0;
+}
+var mouseMoveOld = 0;
+var mouseStepMod = 0;
+function discDrag(event){
+	
+if (discClicked === true){
+	if(event.y !== mouseMoveOld){
+		mouseStepMod = (mouseMoveOld - event.y) * -1;
+		console.log("scratch? " + mouseStepMod);
+		mouseMoveOld = event.y;
+	}
+}
+}
+var oldMouseStepMod = 0;
+var imgDataRhythmMod = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+stepReader();
+
+
+//////////// Reading the canvas & interpreting the sound it will make.
+function stepReader() {
+	if (pressedList[16] === true){
+		imgDataRhythmMod = [75,70,65,60,55,50,45,40,35,30,25,20,15,10,5,0];
+		for(var i=0; i < imgDataRhythmMod.length; i++) {
+			//tempModOverstepVal = imgDataRhythmMod[i] + step;
+
+			if(imgDataRhythmMod[i] + step > ctx.canvas.width){
+				imgDataRhythmMod[i] += -(ctx.canvas.width - 6);
+				console.log("test works? " + imgDataRhythmMod[i]);
+			}
+			else{break}};
+			//console.log(imgDataRhythmMod);
+	}
+	if (pressedList[16] === false){imgDataRhythmMod = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]};
+	
+	imgData1 = ctx.getImageData(step + imgDataRhythmMod[15], 320, 5, 10);
+	imgData2 = ctx.getImageData(step + imgDataRhythmMod[14] , 300, 5, 10);
+	imgData3 = ctx.getImageData(step + imgDataRhythmMod[13], 280, 5, 10);
+	imgData4 = ctx.getImageData(step + imgDataRhythmMod[12], 260, 5, 10);
+	imgData5 = ctx.getImageData(step + imgDataRhythmMod[11], 240, 5, 10);
+	imgData6 = ctx.getImageData(step + imgDataRhythmMod[10], 220, 5, 10);
+	imgData7 = ctx.getImageData(step + imgDataRhythmMod[9], 200, 5, 10);
+	imgData8 = ctx.getImageData(step + imgDataRhythmMod[8], 180, 5, 10);
+	imgData9 = ctx.getImageData(step + imgDataRhythmMod[7], 160, 5, 10);
+	imgData10 = ctx.getImageData(step + imgDataRhythmMod[6], 140, 5, 10);
+	imgData11 = ctx.getImageData(step + imgDataRhythmMod[5], 120, 5, 10);
+	imgData12 = ctx.getImageData(step + imgDataRhythmMod[4], 100, 5, 10);
+	imgData13 = ctx.getImageData(step + imgDataRhythmMod[3], 80, 5, 10);
+	imgData14 = ctx.getImageData(step + imgDataRhythmMod[2], 60, 5, 10);
+	imgData15 = ctx.getImageData(step + imgDataRhythmMod[1], 40, 5, 10);
+	imgData16 = ctx.getImageData(step + imgDataRhythmMod[0], 20, 5, 10);
+				
+	
+	ctx.clearRect(0,0,ctx.canvas.width,5);
+	if(discClicked === false){
+	discDiv.style.webkitTransform="rotate(" + (step.map(6, 500, 0, 360)) + "deg)";
+	step += 2;
+	}
+	if(discClicked === true){
+	
+	if(mouseStepMod != oldMouseStepMod){
+	step += mouseStepMod;
+	oldMouseStepMod = mouseStepMod;
+	}
+	discDiv.style.webkitTransform="rotate(" + (step.map(6, 500, 0, 360)) + "deg)";
+	}
+	
+	
+	
+	ctx.fillRect(step,0,5,5);
+	//console.log(imgData1.data);
+	
+	if(imgData1.data[4] && pressedList[0] === true){
+	gain1.gain.value = 1;
+	ctx.fillStyle="blue";
+	ctx.fillRect(0, 320, 5, 5);
+	ctx.fillStyle="red";
+	}
+	else{
+	gain1.gain.value = 0;
+	ctx.fillRect(0, 320, 5, 5);
+	}
+	
+	if(imgData2.data[4] && pressedList[1] === true){
+	gain2.gain.value = 1;
+	ctx.fillStyle="blue";
+	ctx.fillRect(0, 300, 5, 5);
+	ctx.fillStyle="red";
+	}
+	else{
+	gain2.gain.value = 0;
+	ctx.fillRect(0, 300, 5, 5);
+	}	
+	
+	if(imgData3.data[4] && pressedList[2] === true){
+	gain3.gain.value = 1;
+	ctx.fillStyle="blue";
+	ctx.fillRect(0, 280, 5, 5);
+	ctx.fillStyle="red";
+	}
+	else{
+	gain3.gain.value = 0;
+	ctx.fillRect(0, 280, 5, 5);
+	}
+	
+	if(imgData4.data[4] && pressedList[3] === true){
+	gain4.gain.value = 1;
+	ctx.fillStyle="blue";
+	ctx.fillRect(0, 260, 5, 5);
+	ctx.fillStyle="red";
+	}
+	else{
+	gain4.gain.value = 0;
+	ctx.fillRect(0, 260, 5, 5);
+	}
+	
+	if(imgData5.data[4] && pressedList[4] === true){
+	gain5.gain.value = 1;
+	ctx.fillStyle="blue";
+	ctx.fillRect(0, 240, 5, 5);
+	ctx.fillStyle="red";
+	
+	}
+	else{
+	gain5.gain.value = 0;
+	ctx.fillRect(0, 240, 5, 5);
+	}
+	
+	if(imgData6.data[4] && pressedList[5] === true){
+	gain6.gain.value = 1;
+	ctx.fillStyle="blue";
+	ctx.fillRect(0, 220, 5, 5);
+	ctx.fillStyle="red";
+	}
+	else{
+	gain6.gain.value = 0;
+	ctx.fillRect(0, 220, 5, 5);
+	}	
+	
+	if(imgData7.data[4] && pressedList[6] === true){
+	gain7.gain.value = 1;
+	ctx.fillStyle="blue";
+	ctx.fillRect(0, 200, 5, 5);
+	ctx.fillStyle="red";
+	}
+	else{
+	gain7.gain.value = 0;
+	ctx.fillRect(0, 200, 5, 5);
+	}
+	
+	if(imgData8.data[4] && pressedList[7] === true){
+	gain8.gain.value = 1;
+	ctx.fillStyle="blue";
+	ctx.fillRect(0, 180, 5, 5);
+	ctx.fillStyle="red";
+	}
+	else{
+	gain8.gain.value = 0;
+	ctx.fillRect(0, 180, 5, 5);
+	}
+	
+	if(imgData9.data[4] && pressedList[8] === true){
+	gain9.gain.value = 1;
+	ctx.fillStyle="blue";
+	ctx.fillRect(0, 160, 5, 5);
+	ctx.fillStyle="red";
+	}
+	else{
+	gain9.gain.value = 0;
+	ctx.fillRect(0, 160, 5, 5);
+	}
+	
+	if(imgData10.data[4] && pressedList[9] === true){
+	gain10.gain.value = 1;
+	ctx.fillStyle="blue";
+	ctx.fillRect(0, 140, 5, 5);
+	ctx.fillStyle="red";
+	}
+	else{
+	gain10.gain.value = 0;
+	ctx.fillRect(0, 140, 5, 5);
+	}	
+	
+	if(imgData11.data[4] && pressedList[10] === true){
+	gain11.gain.value = 1;
+	ctx.fillStyle="blue";
+	ctx.fillRect(0, 120, 5, 5);
+	ctx.fillStyle="red";
+	}
+	else{
+	gain11.gain.value = 0;
+	ctx.fillRect(0, 120, 5, 5);
+	}
+	
+	if(imgData12.data[4] && pressedList[11] === true){
+	gain12.gain.value = 1;
+	ctx.fillStyle="blue";
+	ctx.fillRect(0, 100, 5, 5);
+	ctx.fillStyle="red";
+	}
+	else{
+	gain12.gain.value = 0;
+	ctx.fillRect(0, 100, 5, 5);
+	}
+	
+	if(imgData13.data[4] && pressedList[12] === true){
+	gain13.gain.value = 1;
+	ctx.fillStyle="blue";
+	ctx.fillRect(0, 80, 5, 5);
+	ctx.fillStyle="red";
+	}
+	else{
+	gain13.gain.value = 0;
+	ctx.fillRect(0, 80, 5, 5);
+	}
+	
+	if(imgData14.data[4] && pressedList[13] === true){
+	gain14.gain.value = 1;
+	ctx.fillStyle="blue";
+	ctx.fillRect(0, 60, 5, 5);
+	ctx.fillStyle="red";
+	}
+	else{
+	gain14.gain.value = 0;
+	ctx.fillRect(0, 60, 5, 5);
+	}	
+	
+	if(imgData15.data[4] && pressedList[14] === true){
+	gain15.gain.value = 1;
+	ctx.fillStyle="blue";
+	ctx.fillRect(0, 40, 5, 5);
+	ctx.fillStyle="red";
+	}
+	else{
+	gain15.gain.value = 0;
+	ctx.fillRect(0, 40, 5, 5);
+	}
+	
+	if(imgData16.data[4] && pressedList[15] === true){
+	gain16.gain.value = 1;
+	ctx.fillStyle="blue";
+	ctx.fillRect(0, 20, 5, 5);
+	ctx.fillStyle="red";
+	}
+	else{
+	gain16.gain.value = 0;
+	ctx.fillRect(0, 20, 5, 5);
+	}
+	// Step loops back
+	if (step > ctx.canvas.width)
+	{
+	step = 6;
+	}
+	if (step <= 5){
+		step = ctx.canvas.width}
+	setTimeout(stepReader, tempoVal);
+};
+</script>
+</body>
+</html>

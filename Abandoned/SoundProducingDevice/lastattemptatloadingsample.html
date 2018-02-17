@@ -1,0 +1,60 @@
+<html><body>
+<button id="startbutton">start</button>
+<button id="stopbutton">stop</button>
+
+<script>// define variables
+
+var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+var source;
+
+var pre = document.querySelector('pre');
+var myScript = document.querySelector('script');
+var play = document.querySelector('.play');
+var stop = document.querySelector('.stop');
+
+// use XHR to load an audio track, and
+// decodeAudioData to decode it and stick it in a buffer.
+// Then we put the buffer into the source
+
+function getData() {
+  source = audioCtx.createBufferSource();
+  var request = new XMLHttpRequest();
+
+  request.open('GET', 'https://thefunnybrain.com/wp-content/uploads/2018/01/test.wav', true);
+
+  request.responseType = 'arraybuffer';
+
+
+  request.onload = function() {
+    var audioData = request.response;
+
+    audioCtx.decodeAudioData(audioData, function(buffer) {
+        source.buffer = buffer;
+
+        source.connect(audioCtx.destination);
+        source.loop = true;
+      },
+
+      function(e){ console.log("Error with decoding audio data" + e.err); });
+
+  }
+
+  request.send();
+}
+
+// wire up buttons to stop and play audio
+play = document.getElementById('startbutton');
+play.onclick = function() {
+  getData();
+  source.start(0);
+  play.setAttribute('disabled', 'disabled');
+}
+stop = document.getElementById('stopbutton');
+stop.onclick = function() {
+  source.stop(0);
+  play.removeAttribute('disabled');
+}
+
+
+// dump script to pre element
+</script></body></html>

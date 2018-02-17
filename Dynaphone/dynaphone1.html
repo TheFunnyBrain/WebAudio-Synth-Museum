@@ -1,0 +1,83 @@
+<html>
+	<head>
+		<style>
+	#myCanvas {
+    position: absolute;
+    z-index: 1;
+    left: 0;
+    top: 0;
+}
+
+	#point {
+    position: absolute;
+    z-index: 2;
+    left: 0;
+    top: 0;
+    border: 1px solid green;
+}</style>
+	</head>
+	<body style="background-color:green">
+		<canvas id="myCanvas" width="500" height="250" style="border:1px solid #d3d3d3;"></canvas>
+		<canvas id="point" width="500" height="500" style="border:1px solid #d3d3d3;"></canvas>
+		<script>
+			var canvas = document.getElementById('myCanvas');
+			var context = canvas.getContext('2d');
+			var canvaspoint = document.getElementById('point');
+			var contextpoint = canvaspoint.getContext('2d');
+			context.beginPath();
+			context.arc(250, 250, 245, 0, Math.PI, true);
+			context.closePath();
+			context.lineWidth = 5;
+			context.fillStyle = 'grey';
+			context.fill();
+			context.strokeStyle = '#550000';
+			context.stroke();
+			
+			contextpoint.beginPath();
+			contextpoint.moveTo(250, 250);
+			contextpoint.lineTo(250, 100);
+			contextpoint.stroke();
+			
+			var dragging = false;
+			point.addEventListener('mousedown', function () {
+			  mouseMoved(event);
+			  dragging = true
+			});
+
+			point.addEventListener('mouseup', function (){stopDragging()});
+			//myCanvas.addEventListener('mouseleave', function (){stopDragging()});
+			
+			
+			function stopDragging()
+			{console.log('no drag!');
+			dragging = false;
+			}
+			var circleArc=Math.PI*2;
+			point.addEventListener("mousemove", function(event){mouseMoved(event)});
+			
+			function mouseMoved(event){
+				if(dragging === true){
+					context.strokeStyle = '#550000';
+					var newRot=(event.clientX.map(0, 505, -90, 90))
+					console.log(event.clientX)
+					canvaspoint.style.webkitTransform="rotate(" + newRot + "deg)";
+					console.log(newRot);
+
+				
+				
+				}
+
+			}
+			
+			
+			
+			
+Number.prototype.map = function (in_min, in_max, out_min, out_max) {
+  return (this - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+}			
+			
+			
+		</script>
+		
+	</body>
+</html>

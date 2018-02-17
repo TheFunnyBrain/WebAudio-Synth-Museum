@@ -1,0 +1,92 @@
+<html>
+<head></head>
+<body>
+<button id="muteButton">Quiet please!</button>
+<script>
+
+var audio_context = window.AudioContext || window.webkitAudioContext;
+var con = new audio_context();
+
+fundamentalFreq = [32];
+
+var mutePress = document.getElementById('muteButton');
+
+	mutePress.onmousedown = function(event){
+	console.log("before " + CfundamentalOscSet.amp[1]);
+	//CfundamentalOscSet.amp[1].setTargetAtTime(0,0,5* 0.5);
+	//CthirdOscSet.amp[1].setTargetAtTime(0,0,5* 0.5);
+	//cfifthOscSet.amp[1].setTargetAtTime(0,0,5*0.5);
+	CfundamentalOscSet.amp[1].gain.value = 0;
+	console.log(CfundamentalOscSet.amp[1]);
+	CthirdOscSet.amp[1].gain.value = 0;
+	cfifthOscSet.amp[1].gain.value = 0;
+	console.log(CfundamentalOscSet.amp[1]);
+	console.log(CthirdOscSet.amp[1]);
+	console.log(cfifthOscSet.amp[1]);
+	}
+
+
+CfundamentalOscSet = [0,1,2,3,4,5,6,7,8,9,10,11,12];
+CfundamentalOscSet.octave =[];
+CfundamentalOscSet.id = [];
+CfundamentalOscSet.amp = []
+
+CthirdOscSet = [];
+CthirdOscSet.octave = [];
+CthirdOscSet.id = [];
+CthirdOscSet.amp = [];
+
+cfifthOscSet = [];
+cfifthOscSet.octave = [];
+cfifthOscSet.id = [];
+cfifthOscSet.amp = [];
+
+amp = [];
+
+var note = [];
+//createFundamentalNoteOSC(CfundamentalOscSet);
+//createCthirdsNoteOSC(CthirdOscSet);
+//createcfifthPartialNoteOSC(cfifthOscSet);
+
+//function createFundamentalNoteOSC(note){
+	for(i = 1; i < 8; i++){
+	var amp[1] = con.createGain();
+	amp[1].gain.value = 1;
+	amp[1].connect(con.destination);
+	console.log(note);
+	octave[i] = con.createOscillator();
+	octave[i].frequency.value = 1* Math.pow(2,i + 4);
+	octave[i].connect(note.amp[1])
+	octave[i].start(i);
+	console.log(Math.pow(2,i+4));
+	console.log
+	}
+//}
+//function createCthirdsNoteOSC(note){
+	for(i = 1; i < 7; i++){
+	var note.amp[1] = con.createGain();
+	note.amp[1].gain.value = 1;
+	note.amp[1].connect(con.destination);
+	var note.octave[i] = con.createOscillator();
+	note.octave[i].frequency.value = 3* Math.pow(2,i + 4);
+	note.octave[i].connect(note.amp[1])
+	note.octave[i].start(i);
+	console.log(3* Math.pow(2,i + 4,i+4));
+	}
+//}
+//function createcfifthPartialNoteOSC(note){
+	for(i = 1; i < 7; i++){
+	var note.amp[1] = con.createGain();
+	note.amp[1].gain.value = 1;
+	note.amp[1].connect(con.destination);
+	var note.octave[i] = con.createOscillator();
+	note.octave[i].frequency.value = 5* Math.pow(2,i + 4);
+	note.octave[i].connect(note.amp[1])
+	note.octave[i].start(i);
+	console.log(5* Math.pow(2,i + 4,i+4));
+	}
+//}
+
+
+
+</script>

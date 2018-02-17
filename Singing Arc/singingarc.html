@@ -1,0 +1,251 @@
+<html>
+	<head>
+	<style>
+			header {
+				width:100%;
+				background-color:orange;
+				text-align:center;
+								padding-bottom:40px;
+				padding-top:40px;
+				font-size:3em;
+			}
+
+			canvas { 
+				position: absolute;
+				z-index: 100;}
+	
+			#ArcPiano {
+
+					margin:auto;
+					padding:0px;}
+			#mainbox {		position: relative;
+							padding: 0px;
+							
+
+					}
+						button {
+						border:solid;border-color:black;
+						text-align: center;
+						color: #ffcc00;
+						text-shadow: 0 0 6px black;
+						background-color: #755e00;
+						display:block;
+						margin:auto;
+						display:inline-block;
+						}
+					
+
+		</style>
+	</head>
+	<body style="background-color:orange">
+		
+		<header><a href="http://synthmuseum.thefunnybrain.com" style="float:left; text-decoration: none;font-size:0.7em;padding-left:10px">Back to home</a> The Singing Arc, 1899 <a href="http://synthmuseum.thefunnybrain.com/telharmonium.html" style="float:right; text-decoration: none;
+	font-size:0.7em;">Telharmonium, 1912 -></a><br>
+	
+	</header>
+		<br>
+		<div id="light"
+			style="
+				position:fixed;
+				padding:0;
+				margin:0;
+				top:100;
+				left:0;
+				width: 100%;
+				height: 100%;
+				background:brown;">
+				<br>
+		
+		<!--background:rgba(255,255,0,1);"-->
+		<button id="ElectricityButton">Click here for Electricity effect (FLASHING LIGHT WARNING)</button>
+		<button id="rescalePageButton" onclick="location.reload()">Rescale the page</button>
+		<div style="margin:auto; width:800; height:200;   background-size: cover; background-image: url('http://synthmuseum.thefunnybrain.com/img/picturearc.png')">
+			
+			<br>
+			<canvas id="arcCanvas" style="margin-left:200; margin-right:600 ;width:400; height:100px;"></canvas>
+		</div>
+		<div id="mainbox">
+			<div id="ArcPiano" style="margin:auto; z-index:-1"></div>
+		</div>
+		</div>
+		<script src="https://rawgit.com/nexus-js/ui/master/dist/NexusUI.js"></script>
+		<script>
+			var audio_context = window.AudioContext || window.webkitAudioContext;
+			var con = new audio_context();
+			
+			
+			var mainAmp = con.createGain();
+			mainAmp.gain.value = 100;
+			mainAmp.connect(con.destination);
+			
+			//https://noisehack.com/generate-noise-web-audio-api/
+			var bufferSize = 4096;
+			
+			var pinkNoise = (function() {
+				var b0, b1, b2, b3, b4, b5, b6;
+				b0 = b1 = b2 = b3 = b4 = b5 = b6 = 0.0;
+				var node = con.createScriptProcessor(bufferSize, 1, 1);
+				node.onaudioprocess = function(e) {
+				var output = e.outputBuffer.getChannelData(0);
+					for (var i = 0; i < bufferSize; i++) {
+						var white = Math.random() * 2 - 1;
+						b0 = 0.99886 * b0 + white * 0.0555179;
+						b1 = 0.99332 * b1 + white * 0.0750759;
+						b2 = 0.96900 * b2 + white * 0.1538520;
+						b3 = 0.86650 * b3 + white * 0.3104856;
+						b4 = 0.55000 * b4 + white * 0.5329522;
+						b5 = -0.7616 * b5 - white * 0.0168980;
+						output[i] = b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362;
+						output[i] *= 0.11; // (roughly) compensate for gain
+						b6 = white * 0.115926;
+					}
+				}
+				return node;
+			})();
+			
+			// End of pasted code
+			
+			//Pink noise Setup, amp needs to be made before lightNoiseSculptFilter
+			var pinkNoiseAmp = con.createGain();
+			pinkNoiseAmp.gain = 1;
+			
+			//I will include a spectrogram image from which I based the electricity arc from. The example sound was based on a video I found at:
+			// http://120years.net/the-singing-arcwilliam-duddeluk1899/
+			// Video source: Sound Berries (Sep 17, 2014), "Electricity, low voltage arc - 02, sound effect." Accessed 12/01/2017
+			var lightNoiseBoostValues = [700, 3200, 3900, 4000,4600,5100,6500,6750]
+			var lightNoiseDecreaseValues = [1400, 2900, 3400, 4200, 4800, 5900]
+			var lightNoiseBoostArray = [con.createBiquadFilter(),con.createBiquadFilter(),con.createBiquadFilter(),con.createBiquadFilter(),con.createBiquadFilter(),con.createBiquadFilter(),con.createBiquadFilter(),con.createBiquadFilter(),con.createBiquadFilter(),]
+			var lightNoiseDecreaseArray = [con.createBiquadFilter(),con.createBiquadFilter(),con.createBiquadFilter(),con.createBiquadFilter(),con.createBiquadFilter(),con.createBiquadFilter(),con.createBiquadFilter(),con.createBiquadFilter(),con.createBiquadFilter(),]
+			pinkNoise.connect(lightNoiseBoostArray[0])
+			lightNoiseBoostArray[8].connect(lightNoiseDecreaseArray[0]);
+			//lightNoiseBoostArray[8].connect(pinkNoiseAmp);
+			
+			for(var i = 0; i < 8; i++){
+				lightNoiseBoostArray[i].type = "peaking";
+				lightNoiseBoostArray[i].frequency.value = lightNoiseBoostValues[i];
+				//console.log(lightNoiseBoostArray[i].frequency.value);
+				lightNoiseBoostArray[i].Q.value = 10;
+				lightNoiseBoostArray[i].gain.value = 10;
+				lightNoiseBoostArray[i].connect(lightNoiseBoostArray[i+1])
+			}
+			lightNoiseBoostArray[6].type= "peaking";
+			lightNoiseBoostArray[6].gain.value = 150;
+			lightNoiseBoostArray[6].Q.value = 10;
+			console.log(lightNoiseBoostArray[7].frequency.value);
+			for(var i = 0; i < 6; i++){
+				lightNoiseDecreaseArray[i].type = "notch";
+				lightNoiseDecreaseArray[i].frequency.value = lightNoiseDecreaseValues[i];
+				//console.log(lightNoiseDecreaseArray[i].frequency.value);
+				lightNoiseDecreaseArray[i].Q.value = 10;
+				lightNoiseDecreaseArray[i].connect(lightNoiseDecreaseArray[i+1])
+			}
+
+			
+			
+			var lightNoiseLowPass = con.createBiquadFilter();
+			lightNoiseDecreaseArray[6].connect(lightNoiseLowPass);
+			lightNoiseLowPass.type = "lowpass";
+			lightNoiseLowPass.frequency.value = 7500;
+
+			
+
+			var lightNoiseHighPass = con.createBiquadFilter();
+			lightNoiseHighPass.type = "highpass";
+			lightNoiseHighPass.frequency.value = 500;
+			lightNoiseHighPass.connect(pinkNoiseAmp)
+			lightNoiseLowPass.connect(lightNoiseHighPass);					
+			
+			//THIS ONE FILTERS THE "FINISHED" NOISE - I SHOULD NOT MIX THIS IN WITH THE OTHER FILTERS ACCIDENTALLY
+			var resonantFilter1 = con.createBiquadFilter();
+			resonantFilter1.type = "bandpass";
+			resonantFilter1.frequency.value = 440;
+			resonantFilter1.Q.value = 1000;
+			resonantFilter1.gain.value = 40;
+			resonantFilter1.connect(mainAmp);
+			console.log(resonantFilter1);
+			
+			pinkNoiseAmp.connect(resonantFilter1);
+			
+			//Piano controls a resonant filter to set pitch from the noise.
+			Nexus.context = con
+			
+			var mainWidth = window.innerWidth;
+			var mainHeight = window.innerHeight;
+			var pianoWidth = mainWidth - 50;
+			var pianoHeight = mainWidth * 0.2;
+			var pianoControl= new Nexus.Piano('#ArcPiano',{'lowNote':36,'highNote':84, 'size':[pianoWidth,pianoHeight]});
+			console.log(pianoWidth);
+			
+			pianoControl.on('change', function(v){
+				resonantFilter1.frequency.value = Nexus.mtof(v.note);
+			}
+			);
+			//Canvas for the Electricity arc, randomly generates line paths to emulate electricity arcs.
+		
+			
+			var c = document.getElementById("arcCanvas");
+			var ctx = c.getContext("2d");
+			ctx.shadowBlur = 20;
+			ctx.shadowColor = "blue";
+			ctx.strokeStyle="lightblue";
+			ctx.lineWidth=1;
+			var ElectricityButtonBool = false;
+			var arcValues = [100,29,23,53,53,2,3,5,60,100,50,49,100]
+			var arcSpacing
+			
+			ElectricityButtonElement = document.getElementById('ElectricityButton');
+			ElectricityButtonElement.onclick = function(){ElectricityButtonBool = !ElectricityButtonBool;arcDraw();};
+			
+			arcDraw();
+			
+			function arcDraw(){
+				arcValues = [50, getRandom(),getRandom(),getRandom(),getRandom(),getRandom(),getRandom(),getRandom(),getRandom(),getRandom(),getRandom(),getRandom(),getRandom(),getRandom(),50]
+				ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+				ctx.beginPath();
+				ctx.moveTo(0,50);
+				for(i=0; i <= 28; i++){
+					arcSpacing = (i) * 42;
+					ctx.lineTo(arcSpacing,arcValues[i]);
+					ctx.stroke();
+					ctx.moveTo(arcSpacing,arcValues[i]);
+				}
+				ctx.moveTo(400,50);
+				ctx.lineTo(ctx.width,50);
+				ctx.stroke;
+				if(ElectricityButtonBool === true){
+					setTimeout(arcDraw, 20)
+				}
+			}
+
+			//Gets the random plots for the lines.
+			var randomMult
+			function getRandom(){
+				randomMult = Math.floor(Math.random() * 150)
+				return Math.floor(Math.random() * randomMult)
+				
+			}
+
+			//Clears the canvas in case things get stuck (actually shouldn't need this because the main function clears, but I decided that if things go wrong, no arc is better as it still retains the illusion on some level.
+			function delayedClear(){
+				ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+				setTimeout(delayedClear, 500)
+			}
+			//The ambient light flickering is controlled by a random value affecting the opacity of a yellow overlay.
+			//I have limited the light flicker to a much slower rate so that it is below the 3hz rate which can trigger seizures
+			//source: Epilepsy Society(2018) "Photosensitive Epilepsy" https://www.epilepsysociety.org.uk/photosensitive-epilepsy accessed 12/01/18
+			console.log(pinkNoise);
+			var currentVol = 0;
+			lightDivControl = document.getElementById('light');
+			lightFlicker();
+			function lightFlicker()
+				{
+					if(Math.random() <= 0.4){
+						lightDivControl.style.opacity = (Math.random() / 20) + 0.9;
+						
+					}
+					setTimeout(lightFlicker, 500)
+				}
+				
+		</script>
+	</body>
+</html>

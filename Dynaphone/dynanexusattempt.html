@@ -1,0 +1,82 @@
+<html>
+	<body>
+		<div id="dial" style="width:500px; height:500px; overflow: hidden; position:relative; z-index: 1;">
+			<div style="width:500px; height:250px;position: relative; top:-250; z-index: 2;"></div>
+		</div>
+		<br>
+		<div id="dialCover" style="width:500; height:300; background-color:brown; position:relative">
+			<div style="width:40">
+				<div id="onOffSwitch" style="width:40; transform: rotate(90deg);"></div>
+				On/Off
+				</div>
+		</div>
+		<p>The total rotation of the dial was equal to seven octaves but only the five highest or lowest could be selected at any one time by the means of a switch, giving an overlap of three octaves common to both ranges.</p>
+			
+			
+		<p>Additional vibrato effects could be added by moving the right hand to and fro slightly and the machine also included a push button for articulating the sound. The left hand controlled the volume and timbre – described as similar to a cello, low flute, saxophone or french horn. The Dynaphone generated sound by the by-now standard method of a heterodyning vacuum tube pair, originally used in Leon Termen’s ‘Theremin‘.</p>
+		
+		<p>To obtain pure fundamentals
+By means of loading the fundamentals with certain series of harmonics to obtain timbres which will produce new sounds.
+To speculate on the new sounds that the combination of two or more interfering Dynaphones would create if combined as one instrument.
+To increase the range of the instrument to reach the highest frequencies which no other instrument can give, together with adequate intensity.</p>
+		<script src="https://rawgit.com/nexus-js/ui/master/dist/NexusUI.js"></script>
+		<script>
+		var audio_context = window.AudioContext || window.webkitAudioContext;
+		var con = new audio_context();
+	
+		
+		var mainVolume = con.createGain();
+		mainVolume.connect(con.destination);
+		
+		
+		//carrier
+		var carrierOscillator = con.createOscillator();
+		carrierOscillator.frequency.value = 440;
+		carrierOscillator.connect(mainVolume);
+		carrierOscillator.start();
+		//modifier goes into carrier's frequency after being amplified
+		var modGain = con.createGain();
+		modGain.gain.value = 1065;
+		modGain.connect(carrierOscillator.frequency)
+		var modOsc = con.createOscillator();
+		modOsc.frequency.value = 833;
+		modOsc.connect(modGain);
+		modOsc.start();
+		
+		
+		dial1 = new Nexus.Dial('#dial',{'mode':'absolute','min':440,'max':13289.76,});
+		
+		dial1.on('change', function(){
+			carrierOscillator.frequency.value = dial1.value;
+			//console.log(dial1.value);
+		});
+		
+		var coverUp = document.getElementById("dialCover")
+		coverUp.onmouseover = function(){
+			coverUp.focus();
+		};
+
+		var onOffToggler = new Nexus.Toggle('#onOffSwitch',{'state': true});
+		var onOffBool = true;
+		onOffSwitch = document.getElementById('onOffSwitch');
+		onOffSwitch.style.webkitTransform="rotate 90 deg";
+		onOffToggler.on('click', function(e){
+			onOffBool = !onOffBool;
+			if(onOffBool === false){
+				mainVolume.gain.value = 0;
+				onOffToggler.value = 0;
+			}
+			if(onOffBool === true){
+				mainVolume.gain.value = 1;
+				onOffToggler.value = 1;
+			}
+		}
+		)
+		//
+		//6644.88
+		
+	//	1 	2 	3 	4! 	5! 	6!
+	//	4!	5 !	6! 	7 	8	9
+		
+		</script>
+	</body>

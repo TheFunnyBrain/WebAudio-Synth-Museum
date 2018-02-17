@@ -1,0 +1,21 @@
+<html>
+	<body>
+		<script>
+			var audio_context = window.AudioContext || window.webkitAudioContext;
+			var con = new audio_context();
+			
+			var testOsc1 = con.createOscillator();
+			var testOsc2 = con.createOscillator();
+			
+			testOsc1.frequency.value = 350;
+			testOsc1.start()
+			testOsc2.frequency.value = testOsc1.frequency.value * 1.5;
+			testOsc2.start(); 
+			
+			testOsc1.connect(con.destination);
+			testOsc2.connect(con.destination);
+			
+			
+		</script>
+	</body>
+</html>

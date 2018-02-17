@@ -1,0 +1,42 @@
+1	2	3	4	5	6	8	10	12	16	20	24	32		40		48		64		80		96
+C1	C2	G2	C3	E3	G3	C4	E3	G4	C5	?	G5	C6		E6		G		C		E/Eb?	G
+32	64	96	128	160	192	256	320	384	512	??	768	1024	1280	1536	2048	2560	3072	
+
+
+
+
+
+
+
+What we have is..... C handling E and G ... cahill and pierce decided the 5th mistune wasn't as bad as the other, so I just need to worry about 3rds... I am guessing I'll work downwards?
+
+...so C1 would be handled by A4? that's 2 octaves up... that's a bit weird! ... so what do we do? - Lazy answer is calculate just intonation
+
+the C1  could also be handled by  F3? - 3rd and a 5th both with C in
+
+		<h1>(page 117 Magic music of the Telharmonium)</h1>
+		<ul>
+		<li>3 keyboards</li>
+			<li>(4 banks of 84 keys on each manual 336 keys in total - pedal board is another keyboard!) - some detail on 62-66 on intonation</li>
+			<li>48 keys to the octave...(page 83)</li>
+			<li>One with just intonation, one equal temperament</li>
+		<li>1 pedalboard? It's described with the keyboards as a "pitch Manual"</li>
+		<li>"dynamic manual" (fig 25 keys 67)</li>
+		<li>A master volume connected to a foot pedal, another connected to a set of keys which meant sudden movements could happen, or a weight could be put on a key to boost dynamics and free up a hand</li>
+
+		<li>timbre control switches</li>
+		<li>4 swell pedals (one for volume, another for sudden volume jumps</li>
+		<li>Touch sensitive... y axis?</li>
+		</ul>
+		
+		48 keys per octave... 1906 - there were just the first two
+		spring 1907 - 4 banks of alternating 84 black and white keys
+		<ol>
+			<li>12 for standard Equal temperament intervals</li>
+			<li>12 for Just intonation (weird mathematical one)</li>
+			<li>24 left... are these the black/white alternating keys, as that would add up to 24?</li>
+		</ol>
+			Fun fact: the lowest alternator was cut to make 7ths
+			
+			Adam needs to have a load of stops (pull slidey levers (page 112), the player set these to positions to mix the harmonics! Damn that's cool! - Right hand one is full volume, others lower them somehow - draw switches are mentioned too, might be replacement
+		

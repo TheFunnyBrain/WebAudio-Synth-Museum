@@ -1,0 +1,380 @@
+
+<html>
+	<head>
+		<style>
+			header {
+				width:100%;
+				background-color:orange;
+				text-align:center;
+								padding-bottom:40px;
+				padding-top:40px;
+				font-size:3em;
+			}
+
+		</style>
+	</head>
+		<body>
+		<header><a href="http://synthmuseum.thefunnybrain.com/telharmonium.html" style="float:left; text-decoration: none;
+	font-size:0.7em;"><- Telharmonium, 1912</a>Audion, 1915<a href="http://synthmuseum.thefunnybrain.com/dynaphone.html" style="float:right; text-decoration: none;
+	font-size:0.7em;">Dynaphone, 1927 -></a></header>
+		<div style="background-color:#663333; padding:10px;" id="mainBox">
+			<div style="margin:auto; text-align:center">
+				<div id="light1" style="border-radius: 50%; width:200px; height:200px; background-color:grey; display:inline-block"></div>
+				<div id="light2" style="border-radius: 50%; width: 200px; height: 200px; background-color: grey; display: inline-block;"></div>
+				<div id="light3" style="border-radius: 50%; width: 200px; height: 200px; background-color: grey; display: inline-block;"></div>
+				<div id="light4" style="border-radius: 50%; width: 200px; height: 200px; background-color: grey; display: inline-block;"></div>
+				<div id="light5" style="border-radius: 50%; width: 200px; height: 200px; background-color: grey; display: inline-block;"></div>
+				<div id="light6" style="border-radius: 50%; width: 200px; height: 200px; background-color: grey; display: inline-block;"></div>
+			</div>
+				<div><h2>Normal</h2>
+					<div id="modOnOff" style="transform: rotate(90deg); width: 40px; height: 20px;" ></div>
+					<h2>Single</h2>
+				</div>
+				<div>
+					<div id="piano1"></div>
+					<div id="slidercontainer" style="padding:2px">
+						<div id="keySlider" onmousedown="sliderPressed()" style="width: 1644px; height: 100px;">
+						</div>
+					</div>
+				</div>
+		</div>
+					<div id="sustainPedal" style="height:60; width:40; margin:auto; background-color:#663333"></div>
+			<h2 style="text-align:center">Sustain Pedal</h2>
+			
+		
+		<script src="https://rawgit.com/nexus-js/ui/master/dist/NexusUI.js"></script>
+
+		<script>
+		var mainWidth = window.innerWidth - 50;
+		var mainHeight = window.innerHeight;
+		var pianoWidth = mainWidth - 35;
+		var mainBoxElement = document.getElementById("mainBox");
+		mainBoxElement.style.width = mainWidth;
+
+		
+		var audio_context = window.AudioContext || window.webkitAudioContext;
+		var con = new audio_context();
+		
+	
+		var mainVolume1 = con.createGain();
+		mainVolume1.connect(con.destination);
+		mainVolume1.gain.value = 0;
+		
+		//carrier
+		var carrierOscillator1 = con.createOscillator();
+		carrierOscillator1.frequency.value = 440;
+		carrierOscillator1.connect(mainVolume1);
+		carrierOscillator1.start();
+		//modifier goes into carrier's frequency after being amplified
+		var modGain1 = con.createGain();
+		modGain1.gain.value = 1065;
+		modGain1.connect(carrierOscillator1.frequency)
+		var modOsc1 = con.createOscillator();
+		modOsc1.frequency.value = 833;
+		modOsc1.connect(modGain1);
+		modOsc1.start();
+//////
+		var mainVolume2 = con.createGain();
+		mainVolume2.connect(con.destination);
+		mainVolume2.gain.value = 0;
+		
+		//carrier
+		var carrierOscillator2 = con.createOscillator();
+		carrierOscillator2.frequency.value = 440;
+		carrierOscillator2.connect(mainVolume2);
+		carrierOscillator2.start();
+		//modifier goes into carrier's frequency after being amplified
+		var modGain2 = con.createGain();
+		modGain2.gain.value = 1065;
+		modGain2.connect(carrierOscillator2.frequency)
+		var modOsc2 = con.createOscillator();
+		modOsc2.frequency.value = 833;
+		modOsc2.connect(modGain2);
+		modOsc2.start();
+///////		
+		var mainVolume3 = con.createGain();
+		mainVolume3.connect(con.destination);
+		mainVolume3.gain.value = 0;
+
+		//carrier
+		var carrierOscillator3 = con.createOscillator();
+		carrierOscillator3.frequency.value = 440;
+		carrierOscillator3.connect(mainVolume3);
+		carrierOscillator3.start();
+		//modifier goes into carrier's frequency after being amplified
+		//ADAM READ THIS!! YOU NEED TO CONNECT THE FREQUENCY TO THE AMPNODE.GAIN NOT CARRIER.FREQUENCY https://stackoverflow.com/questions/35259046/web-audio-api-multiply-waves
+		var modGain3 = con.createGain();
+		modGain3.gain.value = 1065;
+		modGain3.connect(carrierOscillator3.frequency)
+		var modOsc3 = con.createOscillator();
+		modOsc3.frequency.value = 833;
+		modOsc3.connect(modGain3);
+		modOsc3.start();
+///////		
+		var mainVolume4 = con.createGain();
+		mainVolume4.connect(con.destination);
+		mainVolume4.gain.value = 0;
+		
+		//carrier
+		var carrierOscillator4 = con.createOscillator();
+		carrierOscillator4.frequency.value = 440;
+		carrierOscillator4.connect(mainVolume4);
+		carrierOscillator4.start();
+		//modifier goes into carrier's frequency after being amplified
+		var modGain4 = con.createGain();
+		modGain4.gain.value = 1065;
+		modGain4.connect(carrierOscillator4.frequency)
+		var modOsc4 = con.createOscillator();
+		modOsc4.frequency.value = 833;
+		modOsc4.connect(modGain4);
+		modOsc4.start();		
+///////
+		var mainVolume5 = con.createGain();
+		mainVolume5.connect(con.destination);
+		mainVolume5.gain.value = 0;
+		
+		//carrier
+		var carrierOscillator5 = con.createOscillator();
+		carrierOscillator5.frequency.value = 440;
+		carrierOscillator5.connect(mainVolume5);
+		carrierOscillator5.start();
+		//modifier goes into carrier's frequency after being amplified
+		var modGain5 = con.createGain();
+		modGain5.gain.value = 1065;
+		modGain5.connect(carrierOscillator5.frequency)
+		var modOsc5 = con.createOscillator();
+		modOsc5.frequency.value = 833;
+		modOsc5.connect(modGain5);
+		modOsc5.start();
+///////		
+		var mainVolume6 = con.createGain();
+		mainVolume6.connect(con.destination);
+		mainVolume6.gain.value = 0;
+		
+		//carrier
+		var carrierOscillator6 = con.createOscillator();
+		carrierOscillator6.frequency.value = 440;
+		carrierOscillator6.connect(mainVolume6);
+		carrierOscillator6.start();
+		//modifier goes into carrier's frequency after being amplified
+		var modGain6 = con.createGain();
+		modGain6.gain.value = 1065;
+		modGain6.connect(carrierOscillator6.frequency)
+		var modOsc6 = con.createOscillator();
+		modOsc6.frequency.value = 10;
+		modOsc6.connect(modGain6);
+		modOsc6.start();
+		
+		//toggle the mod frequency or not - this will enable plain sine waves.
+		var modWavesToggle = new Nexus.Toggle('#modOnOff')
+		modWavesToggle.colorize("accent","#cccccc")
+		modWavesToggle.on('change', function(e){
+		console.log(e);
+			if(e === true){
+				modOsc1.disconnect();
+				modOsc2.disconnect();
+				modOsc3.disconnect();
+				modOsc4.disconnect();
+				modOsc5.disconnect();
+				modOsc6.disconnect();
+			}
+			if(e === false){
+				modOsc1.connect(modGain1);
+				modOsc2.connect(modGain2);
+				modOsc3.connect(modGain3);
+				modOsc4.connect(modGain4);
+				modOsc5.connect(modGain5);
+				modOsc6.connect(modGain6);
+			}
+		})
+		/// This gets the lights
+	var tubeLightDiv1 = document.getElementById('light1')
+	var tubeLightDiv2 = document.getElementById('light2')
+	var tubeLightDiv3 = document.getElementById('light3')
+	var tubeLightDiv4 = document.getElementById('light4')
+	var tubeLightDiv5 = document.getElementById('light5')
+	var tubeLightDiv6 = document.getElementById('light6')
+		
+		//Slider
+	keySliderObject = new Nexus.Slider('#keySlider',{
+		size:[pianoWidth,100],
+		'mode': 'absolute',  // 'relative' or 'absolute'
+		'min': 0,
+		'max': 2093,
+		'step': 0,
+		'value': 200
+	});
+	keySliderObject.colorize("accent","#cccccc")
+	
+	var LastSliderNumber = 0;
+		keySliderObject.on('change', function(v){
+		//console.log(v  + VCOPitchDialValue);
+		LastSliderNumber = v;
+		carrierOscillator1.frequency.value = v;
+		sliderPressed(v);
+	})
+		
+		
+	var sliderActive = false;
+	function sliderPressed (note)
+	{
+		//if not already active
+		if(sliderActive == false){
+		console.log("Pressed");
+		carrierOscillator1.frequency.value = note;
+		mainVolume1.gain.value = 1;
+		tubeLightDiv1.style.backgroundColor = "yellow";
+		tubeLightDiv1.style.boxshadow = "10px 10px 10px ";
+		
+		sliderActive = true;
+		}
+	} 
+	function sliderLift ()
+	{
+		console.log("UnPressed");
+		mainVolume1.gain.value = 0;
+		tubeLightDiv1.style.backgroundColor = "grey";
+		sliderActive = false;
+	} 
+	//this is mostly to address a bug where the slider did not stop playing. I tried to address the issue by adding various mouse events which would trigger after the user releases the slider. This may be less effective on mobile.
+	keyboardElement = document.getElementById("piano1")
+	keyboardElement.addEventListener("mouseenter", sliderLift);
+	sliderElement = document.getElementById("keySlider")
+	sliderElement.addEventListener("mouseup", sliderLift);
+	slidercontainer = document.getElementById("slidercontainer");
+	slidercontainer.addEventListener("mouseleave", sliderLift);
+	mainBoxElement.addEventListener("mouseenter", sliderLift);
+	mainBoxElement.addEventListener("mouseleave", sliderLift);
+	
+	console.log(Nexus.mtof(96));
+	///PIANO
+	dial1 = new Nexus.Piano('#piano1',{lowNote:24,highNote:96, size:[pianoWidth,200]});
+	var octave = 0;
+	
+	dial1.colorize("accent","#cccccc")
+	dial1.on('change', function(e){
+		console.log("Hey...");
+		octave = octave = Math.trunc(e.note / 12);
+		console.log(octave)
+
+		if(octave === 2){
+			carrierOscillator1.frequency.value = Nexus.mtof(e.note);
+			modOsc1.frequency.value = (carrierOscillator1.frequency.value * 2) - 1;
+			if(e.state === true){
+				mainVolume1.gain.value = 1;
+				tubeLightDiv1.style.backgroundColor = "yellow";
+			}
+			else if (e.state ===false && sustainPedalBool ===false){
+				mainVolume1.gain.value = 0;
+				tubeLightDiv1.style.backgroundColor = "grey";
+			}
+			//console.log(dial1.value);
+		}
+		else if(octave === 3){				
+			carrierOscillator2.frequency.value = Nexus.mtof(e.note);
+			modOsc2.frequency.value = carrierOscillator2.frequency.value * 2;
+			if(e.state === true){
+				mainVolume2.gain.value = 1;
+				tubeLightDiv2.style.backgroundColor = "yellow";
+			}
+			else if (e.state ===false && sustainPedalBool ===false){
+				mainVolume2.gain.value = 0;
+				tubeLightDiv2.style.backgroundColor = "grey";
+			}
+			//console.log(dial1.value);
+		}
+		else if(octave === 4){	
+			carrierOscillator3.frequency.value = Nexus.mtof(e.note);
+			modOsc3.frequency.value = carrierOscillator3.frequency.value * 2;
+			if(e.state === true){
+				mainVolume3.gain.value = 1;
+				tubeLightDiv3.style.backgroundColor = "yellow";
+			}
+			else if (e.state ===false && sustainPedalBool ===false){
+				mainVolume3.gain.value = 0;
+				tubeLightDiv3.style.backgroundColor = "grey";
+			}
+		}
+			//console.log(dial1.value);
+		else if(octave === 5){
+			carrierOscillator4.frequency.value = Nexus.mtof(e.note);
+			modOsc4.frequency.value = carrierOscillator4.frequency.value * 2;
+			if(e.state === true){
+				mainVolume4.gain.value = 1;
+				tubeLightDiv4.style.backgroundColor = "yellow";
+			}
+			else if (e.state ===false && sustainPedalBool ===false){
+				mainVolume4.gain.value = 0;
+				tubeLightDiv4.style.backgroundColor = "grey";
+			}
+			//console.log(dial1.value);
+		}
+		else if(octave === 6){			
+			carrierOscillator5.frequency.value = Nexus.mtof(e.note);
+			modOsc5.frequency.value = carrierOscillator5.frequency.value * 2;
+			if(e.state === true){
+				mainVolume5.gain.value = 1;
+				tubeLightDiv5.style.backgroundColor = "yellow";
+			}
+			else if (e.state ===false && sustainPedalBool ===false){
+				mainVolume5.gain.value = 0;
+				tubeLightDiv5.style.backgroundColor = "grey";
+			}
+			//console.log(dial1.value);
+		}
+		else if(octave === 7){		
+			carrierOscillator6.frequency.value = Nexus.mtof(e.note);
+			console.log(Nexus.mtof(e.note));
+			modOsc6.frequency.value = carrierOscillator6.frequency.value * 2;
+			if(e.state === true){
+				mainVolume6.gain.value = 1;
+				tubeLightDiv6.style.backgroundColor = "yellow";
+			}
+			else if (e.state ===false && sustainPedalBool ===false){
+				mainVolume6.gain.value = 0;
+				tubeLightDiv6.style.backgroundColor = "grey";
+			}
+			//console.log(dial1.value);
+		}
+		else if(sustainPedalBool ===true && e.state ===false){
+			//going to need to bank up a list of notes to turn off when the pedal bool changes.
+			sustainPedalActiveAmpList.push(e.note);
+		}
+	});
+		
+	//sustain pedal
+	var sustainPedalBool = false;
+	sustainPedalDiv = document.getElementById('sustainPedal');
+	
+	var sustainPedalActiveAmpList = [];
+	console.log(sustainPedalActiveAmpList);
+	sustainPedalDiv.onclick = function()
+	{
+		sustainPedalBool = !sustainPedalBool;
+		if(sustainPedalBool === true){
+			sustainPedalDiv.style.backgroundColor = "#33291f"
+		}
+		console.log(sustainPedalBool);
+		 //this will take an array made by the piano while the sustain pedal was active, and when released
+		if(sustainPedalBool === false && sustainPedalActiveAmpList != null){
+			sustainPedalDiv.style.backgroundColor = "#3f2a14";
+			mainVolume1.gain.value = 0;
+			mainVolume2.gain.value = 0;
+			mainVolume3.gain.value = 0;
+			mainVolume4.gain.value = 0;
+			mainVolume5.gain.value = 0;
+			mainVolume6.gain.value = 0;
+			tubeLightDiv1.style.backgroundColor = "grey";
+			tubeLightDiv2.style.backgroundColor = "grey";
+			tubeLightDiv3.style.backgroundColor = "grey";
+			tubeLightDiv4.style.backgroundColor = "grey";
+			tubeLightDiv5.style.backgroundColor = "grey";
+			tubeLightDiv6.style.backgroundColor = "grey";
+			
+			}
+		}	
+		
+
+		
+		</script>
+	</body></html>

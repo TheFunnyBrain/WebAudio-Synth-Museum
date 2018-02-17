@@ -1,0 +1,901 @@
+<html>
+	<head>
+		<style>
+			header {
+				width:100%;
+				background-color:orange;
+				text-align:center;
+								padding-bottom:40px;
+				padding-top:40px;
+				font-size:3em;
+			}
+						a {
+				font-size:0.7em;
+			}
+			button {
+						border:solid;border-color:black;
+						text-align: center;
+						color: #ffcc00;
+						text-shadow: 0 0 6px black;
+						background-color: #755e00;
+						display:block;
+						margin:auto;
+						display:inline-block;
+						}
+			#mainbox, #mainbox2	{    
+							position: relative;
+							padding: 0px;
+						}
+			h2			{
+						border:solid;border-color:black;
+						text-align: center;
+						color: #ffcc00;
+						text-shadow: 0 0 6px black;
+						background-color: #755e00;
+						display:block;
+						margin:auto;
+						}
+			#mainPianoDiv, #mainPianoDiv2, #mainPianoDiv3, #dynamicPianoDiv {
+
+							margin:auto;
+							padding:0px;
+
+						}
+			#toneshape1 {
+
+				margin:auto
+			}
+			#sustainPedal {width: 10%; height:10%; background-color: #663333; margin:auto}
+			#sustainPedal:hover {background-color: #493b2c;}
+			
+			h3 {display:none;
+				text-align: centre;
+				margin:auto}
+			
+			@media only screen and (max-width: 1000px) {
+			h3 {						border:solid;border-color:black;
+						text-align: center;
+						color: #ffcc00;
+						text-shadow: 0 0 6px black;
+						background-color: #755e00;
+						display:block;
+						margin:auto;}
+			body {background-color:green}
+}
+			
+		</style>
+	</head>
+	<body>
+	<!--														<!---parent: 							-webkit-perspective: 500px; /* Safari 4-8  */
+							perspective: 100; - -- child: webkit-transform: rotateX(45deg); /* Safari 3-8  */
+							transform: rotateX(20deg);-->
+		<header><a href="http://synthmuseum.thefunnybrain.com/singingarc.html" style="float:left; text-decoration: none;
+	font-size:0.7em;"><- Singing Arc, 1899</a>Telharmonium Mk III, 1912<a href="http://synthmuseum.thefunnybrain.com/audion.html" style="float:right; text-decoration: none;
+	font-size:0.7em;">Audion, 1915 -></a></header>
+		<div id="toneShaperDiv" style="position:fixed; width:300;height:500;float:left; left:0; top:0; background-color: #663333; text-align:center; z-index:200;display:none;  box-shadow: 5px 5px 5px;">
+			<h2>Tone Shaping</h2>
+			Choose the mix of harmonics
+			<div id="mainbox">
+				Main notes (Fundamental & octave)
+				<div id="toneshape1" style="margin: auto;"></div>
+				3rd Harmonics
+				<div id="toneshape2" style="margin: auto;"></div>
+				5th Harmonics
+				<div id="toneshape3" style="margin: auto;"></div>
+				7th Harmonics
+				<div id="toneshape4" style="margin: auto;"></div>
+			</div>
+			<h2>Dynamics</h2>
+			
+			<p style="background-color:#663333">Set amplitude with precision</p>
+			<div id="dynamicPianoDiv" style="width:300; height: 50;margin: auto;z-index:202" ></div>
+		</div>							
+
+	<h3 style = "width=100%">You may need to open this on a larger screen or if possible rotate your device to landscape because of the keyboard size on the Telharmonium! There should be a Tone blend on the right, if not you may need to scroll down the page.</h3>
+	<div style="margin:auto; text-align:center">
+		<button id="muteButton" style="text-align:center;margin:auto">Click here to mute!</button>
+		<button id="showToneShaperButton" style="text-align:center;margin:auto" onclick="showToneShaper()">Show the tone Shaper</button>
+		<button id="rescalePageButton" style="text-align:center;margin:auto" onclick="location.reload()">Rescale the page</button>
+	</div>
+
+<br>
+		
+		
+		<div style="display: inline-block; ; height: 500; float:left">
+			
+			<div style="width:100%; margin:auto">
+				<h2>Just Intonation Fifths</h2>
+			</div>
+				<div id="mainPianoDiv" ></div>
+			<div style="width:100%;margin:auto">
+				<h2>Equal Temperament Notes (Standard Piano)</h2>
+			</div>
+				<div id="mainPianoDiv2" ></div>
+			<div style="width:100%;margin:auto">
+				<h2>Just Intonation Thirds</h2>
+			</div>	
+				<div id="mainPianoDiv3" ></div>
+			<div style="width:100%;margin:auto;height:5%;background-color:663333;">
+			</div>
+						
+			<div id = "sustainPedal"> <p style="text-align: center">Sustain Pedal</p></div>
+
+		</div>
+		
+
+		<script src="https://rawgit.com/nexus-js/ui/master/dist/NexusUI.js"></script>
+		
+
+	<script>
+			//getting window size for responsiveness
+			var mainWidth = window.innerWidth;
+			var mainHeight = window.innerHeight;
+			var pianoWidth = window.mainWidth - 50;
+			var pianoHeight = (mainWidth * 0.5)/5;
+			
+			var toneShaperElement = document.getElementById('toneShaperDiv')
+			var toneShaperVisible = false
+			function showToneShaper(){
+				toneShaperVisible = !toneShaperVisible;
+				if(toneShaperVisible === true){
+					toneShaperElement.style.display = 'block';
+				}
+				else if(toneShaperVisible === false)
+					toneShaperElement.style.display = 'none';
+			}
+
+		//audio
+	var audio_context = window.AudioContext || window.webkitAudioContext;
+	var con = new audio_context();
+
+		var osc = [
+		[con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),],
+		[con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),],
+		[con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),],
+		[con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),],
+		[con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),],
+		[con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),],
+		[con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),],
+		[con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),],
+		[con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),],
+		[con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),],
+		[con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),],
+		[con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),con.createOscillator(),],
+	];
+	var amp = [
+		[con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),],
+		[con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),],
+		[con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),],
+		[con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),],
+		[con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),],
+		[con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),],
+		[con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),],
+		[con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),],
+		[con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),],
+		[con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),],
+		[con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),],
+		[con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),],
+		[con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),con.createGain(),],
+	];
+	
+	freqs= [4,6,8,10,12,14,16,20,24,28,32,40,48,56,64,80,96,128,5]
+	//freqs would also be different 	I		V		I		III		V		VII		I		III		V		VII		I		III		V		VII		I		III`	V		I		III*
+									//	4		6		8		10		12		14		16		20		24		28		32		40		48		56		64		80		96		128		5
+									//	0		1		2		3		4		5		6		7		8		9		10		11		12		13		14		15		16		17		18
+	//fundamentals = [32.7, 34.65, 36.71, 38.89, 41.20, 43.65, 46.25, 49.00, 51.91, 55.00, 58.27, 61.74] THESE NOTES WERE TEMPORARY, PAGE 103 has the real C notes... need to work off that now, first C would be 129.33
+		//https://pages.mtu.edu/~suits/NoteFreqCalcs.html equation, //https://www.wolframalpha.com/input/?i=n+%3D+129.33+*+(1.059463)%5E5 for the equation, the power is the note we want, so 0 is root, 1 is 1 semitone up...
+	fundamentals = [32.3325,		34.255,		36.292,		38.45,		40.7365,		43.15875,		45.725,		48.444,		51.3245,		54.3765,		57.61,		61.0355]
+					//c				c#			d			d#			e				f				f#			g			g#				a				a#			b			
+	
+	
+	dynamicAmp = con.createGain();
+	dynamicAmp.connect(con.destination);
+	
+	// each harmonic has a slider to set the "mix", I need to plumb in something where each 8th harmonic goes into a special 8th amp, 7th harmonics into 7th amp etc, and their volume when notes play will be a variable set by slider (0-1)
+	
+	//These set up alternators
+	for(h = 0; h < (osc.length); h++){
+		for(i = 0; i < 19; i++){
+			amp[h][i].gain.value = 0;
+			amp[h][i].connect(dynamicAmp);
+			osc[h][i] = con.createOscillator();
+			osc[h][i].frequency.value = (fundamentals[h] * freqs[i]);
+			osc[h][i].connect(amp[h][i])
+			osc[h][i].start();
+		}
+	}
+	//just manually set up the 3rds and 5ths here? set them manually, so that they behave exactly the same as the other notes, except they have frequencies that allow for the interval problem
+	//middle normal scale starts on a c, 3rds start on an a c which is approximately an A * 5n
+	//could get these from a different freqs list, make them static to save time.
+	
+	
+	console.log(freqs[18]);
+	console.log(osc[0][18].frequency.value);
+
+	//this is for setting the just intonation 3rds oscillator - these are the values in fundamentals with the 5/4 ratio applied to them (C -> E)
+	
+	//MUTE
+	var mutePress = document.getElementById('muteButton');
+	mutePress.onmousedown = function(event){
+		for(h = 0; h < (osc.length); h++){
+			for(i = 0; i < 19; i++){
+				amp[h][i].gain.value = 0;
+			}
+		}
+	}
+				
+	// 2nd number in nested array, first one is the note (C,E,G etc)
+	var octave;
+	var notenum
+	
+	//keyboard 1 - fifths, but it was much more effective to tell the keyboard to start at a different place and make it look like it hadn't.
+	var buttonPiano1 = new Nexus.Piano('#mainPianoDiv',{'lowNote':5 , 'highNote' : 77,'mode': 'button', 'size':[pianoWidth,pianoHeight]})
+	buttonPiano1.destroy()
+	buttonPiano1.keyPattern = [	'w',	'b',	'w',	'b',	'w',	'w',	'b',	'w',	'b',	'w',	'w',	'b']
+	buttonPiano1.init()			//G		G#		a		A#		b		c		c#		d		d#		e		f		f#
+	buttonPiano1.colorize("accent","#cccccc")
+	
+	
+	
+	var buttonPiano2 = new Nexus.Piano('#mainPianoDiv2',{'lowNote' : 12, 'highNote' : 84,'mode': 'button', 'size':[pianoWidth,pianoHeight]})
+	buttonPiano2.colorize("accent","#cccccc")
+	
+	// keyboard 3 - thirds
+	var buttonPiano3 = new Nexus.Piano('#mainPianoDiv3',{'lowNote': 8, 'highNote' : 80,'mode': 'button', 'size':[pianoWidth,pianoHeight]})
+	buttonPiano3.destroy()
+	buttonPiano3.keyPattern = ['w',		'w',	'b',	'w',	'b',	'w',	'b',	'w',	'w',	'b',	'w',	'b']
+	buttonPiano3.init()			//e			f		f#		g		g#		a		a#		b		c		c#		d		d# 
+	buttonPiano3.colorize("accent","#cccccc")
+	
+	
+	//sustain pedal
+	var sustainPedalBool = false;
+	sustainPedalDiv = document.getElementById('sustainPedal');
+	
+	var sustainPedalActiveAmpList = [];
+	console.log(sustainPedalActiveAmpList);
+	sustainPedalDiv.onclick = function()
+	{
+		sustainPedalBool = !sustainPedalBool;
+		if(sustainPedalBool === true){
+			sustainPedalDiv.style.backgroundColor = "#33291f"
+		}
+		console.log(sustainPedalBool);
+		 //this will take an array made by the piano while the sustain pedal was active, and when released
+		if(sustainPedalBool === false && sustainPedalActiveAmpList != null){
+			sustainPedalDiv.style.backgroundColor = "#3f2a14";
+		//this rattles through the list saying... ooh we got a C here in the list or whatever, then the next for loop turns it off
+			for(i = 0; i < sustainPedalActiveAmpList.length; i++){
+			console.log(sustainPedalActiveAmpList);
+			//then it goes to amp and says your note is [i] from the list, your oscillator is h, rattle through and mute please
+					for(h = 0; h < (osc[i].length); h++){
+					console.log(osc[i].length);
+					amp[sustainPedalActiveAmpList[i]][h].gain.value=0;
+					console.log(sustainPedalActiveAmpList);
+				}
+			}
+		}
+	}
+				
+	var pianoID = 0
+	//original was individual buttons for each octave, new keyboard needs to be able to say "which note?", to get i if [i][?] and then "which octave?" to decide which gain values will be set to [i]'s array
+	buttonPiano1.on('change', function(event){pianoID = 0;noteAmpPlay(event)})
+	buttonPiano2.on('change', function(event){pianoID = 1;noteAmpPlay(event)})
+	buttonPiano3.on('change', function(event){pianoID = 2;noteAmpPlay(event)})
+	
+	
+	//set volume amount of each harmonic
+	harmonicsAmountArray = [1, 0.5, 0.5, 0.5, 0.5, 0.8,1, 0.5, 0.5, 0.5, 0.5, 0.81, 0.5, 0.5, 0.5, 0.5, 0.8];
+	
+// Because I have split up the harmonics in the interest of clarity when setting tones, they have to go into separate lists initially before being inserted into the main list.
+//Note: I could have put them in as slider values directly on every change, but separate lists means I can also use the same function at the start of the code.
+
+	var harmonicsAmountArray1sts = [1, 0.5, 0.5, 0.6, 0.7, 0.8];
+	updateMainArray1sts();
+
+	var harmonicsAmountArray3rds = [1, 0.9, 0.8, 0.7];
+	updateMainArray3rds();
+
+	var harmonicsAmountArray5ths = [0.9, 0.8, 0.7, 0.8, 1];
+	updateMainArray5ths();
+	var harmonicsAmountArray7ths = [1, 0.5, 0.8];
+function updateMainArray1sts(){
+	harmonicsAmountArray[0] = harmonicsAmountArray1sts[0]
+	harmonicsAmountArray[2] = harmonicsAmountArray1sts[1]
+	harmonicsAmountArray[6] = harmonicsAmountArray1sts[2]
+	harmonicsAmountArray[10] = harmonicsAmountArray1sts[3]
+	harmonicsAmountArray[17] = harmonicsAmountArray1sts[4]
+}
+
+function updateMainArray3rds(){
+	harmonicsAmountArray[3] = harmonicsAmountArray3rds[0]
+	harmonicsAmountArray[7] = harmonicsAmountArray3rds[1]
+	harmonicsAmountArray[11] = harmonicsAmountArray3rds[2]
+	harmonicsAmountArray[15] = harmonicsAmountArray3rds[3]
+}
+
+function updateMainArray5ths(){
+	harmonicsAmountArray[1] = harmonicsAmountArray5ths[0]
+	harmonicsAmountArray[4] = harmonicsAmountArray5ths[1]
+	harmonicsAmountArray[8] = harmonicsAmountArray5ths[2]
+	harmonicsAmountArray[12] = harmonicsAmountArray5ths[3]
+	harmonicsAmountArray[16] = harmonicsAmountArray5ths[4]
+}
+
+function updateMainArray7ths(){
+	harmonicsAmountArray[5] = harmonicsAmountArray7ths[0]
+	harmonicsAmountArray[9] = harmonicsAmountArray7ths[1]
+	harmonicsAmountArray[13] = harmonicsAmountArray7ths[2]
+}
+
+
+	toneSliderArray = new Nexus.Multislider('#toneshape1', {'size': [200,50], 'numberOfSliders':6, 'values': harmonicsAmountArray1sts}),
+	toneSliderArray3rds = new Nexus.Multislider('#toneshape2', {'size': [200,50], 'numberOfSliders':4, 'values': harmonicsAmountArray3rds}),
+	toneSliderArray5ths = new Nexus.Multislider('#toneshape3', {'size': [200,50], 'numberOfSliders':5, 'values': harmonicsAmountArray5ths}),
+	toneSliderArray7ths = new Nexus.Multislider('#toneshape4', {'size': [200,50], 'numberOfSliders':3, 'values': harmonicsAmountArray7ths}),
+	
+	toneSliderArray.colorize("fill","#000000");
+	toneSliderArray.colorize("accent","#755e00");
+
+	toneSliderArray3rds.colorize("fill","#000000");
+	toneSliderArray3rds.colorize("accent","#755e00");
+	
+	toneSliderArray5ths.colorize("fill","#000000");
+	toneSliderArray5ths.colorize("accent","#755e00");
+	
+	toneSliderArray7ths.colorize("fill","#000000");
+	toneSliderArray7ths.colorize("accent","#755e00");
+	
+						console.log(harmonicsAmountArray);
+	
+	var notenums = [1,2,3,4,5,6,7,8,9,10,11,12]
+	var tempNoteNums = [];
+	var tempNoteNum = 0;
+	//change fires if anything changes - press or release, but does give true or false... could make a list like the rhythimicon....
+				
+	function noteAmpPlay(e, j){
+		console.log(osc);
+		notenum = Math.trunc(e.note % 12);
+		octave = Math.trunc(e.note / 12);
+		//j = pianoID;
+		console.log(e);
+		console.log("pianoID: " + pianoID);
+		console.log("octave: " + octave + " Notenum: " + notenum);
+/////TRUES
+		if(e.state === true && pianoID===0){ // this is for 5ths going on...
+			switch (octave){
+					//1 both on and off calibrated.
+					case 1: 
+					amp[notenum][1].gain.value+=harmonicsAmountArray[0];
+					amp[notenum][4].gain.value+=harmonicsAmountArray[2];
+					amp[notenum][5].gain.value+=harmonicsAmountArray[3];
+					amp[notenum][6].gain.value+=harmonicsAmountArray[4];
+					amp[notenum][7].gain.value+=harmonicsAmountArray[5];
+					amp[notenum][8].gain.value+=harmonicsAmountArray[6];
+					amp[notenum][9].gain.value+=harmonicsAmountArray[7];
+					amp[notenum][10].gain.value+=harmonicsAmountArray[8];
+					amp[notenum][11].gain.value+=harmonicsAmountArray[9];
+					amp[notenum][12].gain.value+=harmonicsAmountArray[10];
+					console.log("octave: " + octave + "| freq: :" + osc[notenum][1].frequency.value);
+					break;
+					
+				// 2nd octave 5ths done! Now for 3rds and then rest of octaves...
+				case 2:
+					console.log("press2");
+					amp[notenum][4].gain.value+=harmonicsAmountArray[0];
+					amp[notenum][5].gain.value+=harmonicsAmountArray[1];
+					amp[notenum][6].gain.value+=harmonicsAmountArray[2];
+					amp[notenum][7].gain.value+=harmonicsAmountArray[3];
+					amp[notenum][8].gain.value+=harmonicsAmountArray[4];
+					amp[notenum][9].gain.value+=harmonicsAmountArray[5];
+					amp[notenum][10].gain.value+=harmonicsAmountArray[6];
+					amp[notenum][11].gain.value+=harmonicsAmountArray[7];
+					amp[notenum][12].gain.value+=harmonicsAmountArray[8];
+					amp[notenum][13].gain.value+=harmonicsAmountArray[9];
+					amp[notenum][14].gain.value+=harmonicsAmountArray[10];
+					amp[notenum][15].gain.value+=harmonicsAmountArray[11];
+					amp[notenum][16].gain.value+=harmonicsAmountArray[12];
+					console.log(amp[notenum]);
+					console.log("octave: " + octave + "| freq: :" + osc[notenum][5].frequency.value);
+				break;
+
+				case 3: //3 on's done
+					console.log("press3");
+					amp[notenum][8].gain.value+=harmonicsAmountArray[0];
+					amp[notenum][9].gain.value+=harmonicsAmountArray[1];
+					amp[notenum][10].gain.value+=harmonicsAmountArray[2];
+					amp[notenum][11].gain.value+=harmonicsAmountArray[3];
+					amp[notenum][12].gain.value+=harmonicsAmountArray[4];
+					amp[notenum][13].gain.value+=harmonicsAmountArray[5];
+					amp[notenum][14].gain.value+=harmonicsAmountArray[6];
+					amp[notenum][15].gain.value+=harmonicsAmountArray[7];
+					amp[notenum][16].gain.value+=harmonicsAmountArray[8];
+					console.log("octave: " + octave + "| freq: :" + osc[notenum][8].frequency.value);
+					break;
+				
+				case 4: 
+					console.log("press4");
+					amp[notenum][12].gain.value+=harmonicsAmountArray[0];
+					amp[notenum][13].gain.value+=harmonicsAmountArray[1];
+					amp[notenum][14].gain.value+=harmonicsAmountArray[2];
+					amp[notenum][15].gain.value+=harmonicsAmountArray[3];
+					amp[notenum][16].gain.value+=harmonicsAmountArray[4];
+					console.log("octave: " + octave + "| freq: :" + osc[notenum][10].frequency.value);
+					break;
+				
+				case 5:
+					console.log("press5");
+					amp[notenum][16].gain.value+=harmonicsAmountArray[0];
+					amp[notenum][17].gain.value+=harmonicsAmountArray[1];
+					console.log("octave: " + octave + "| freq: :" + osc[notenum][14].frequency.value);
+					break;
+				
+				case 6:
+					console.log("press6");
+					//amp[notenum][17].gain.value+=harmonicsAmountArray[0];
+					console.log("octave: 6 , but there was no 5th at this pitch on the telharmonium");
+					break;
+				default: break;
+			}}
+		else if(e.state === true && pianoID===1){
+			//1 confirmed, rest not yet
+			switch (octave){
+				case 1: 
+					amp[notenum][0].gain.value+=harmonicsAmountArray[0];
+					amp[notenum][1].gain.value+=harmonicsAmountArray[2];
+					amp[notenum][2].gain.value+=harmonicsAmountArray[4];
+					amp[notenum][3].gain.value+=harmonicsAmountArray[5];
+					amp[notenum][4].gain.value+=harmonicsAmountArray[6];
+					amp[notenum][5].gain.value+=harmonicsAmountArray[7];
+					amp[notenum][6].gain.value+=harmonicsAmountArray[8];
+					amp[notenum][7].gain.value+=harmonicsAmountArray[9];
+					amp[notenum][8].gain.value+=harmonicsAmountArray[10];
+					amp[notenum][9].gain.value+=harmonicsAmountArray[11];
+					amp[notenum][10].gain.value+=harmonicsAmountArray[12];
+					console.log(amp[notenum]);
+					console.log(osc[notenum][0].frequency.value);
+					break;
+					// note 2 are calibrated!
+				case 2:
+					console.log("press2");
+					amp[notenum][2].gain.value+=harmonicsAmountArray[0];
+					amp[notenum][3].gain.value+=harmonicsAmountArray[1];
+					amp[notenum][4].gain.value+=harmonicsAmountArray[2];
+					amp[notenum][5].gain.value+=harmonicsAmountArray[3];
+					amp[notenum][6].gain.value+=harmonicsAmountArray[4];
+					amp[notenum][7].gain.value+=harmonicsAmountArray[5];
+					amp[notenum][8].gain.value+=harmonicsAmountArray[6];
+					amp[notenum][9].gain.value+=harmonicsAmountArray[7];
+					amp[notenum][10].gain.value+=harmonicsAmountArray[8];
+					amp[notenum][11].gain.value+=harmonicsAmountArray[9];
+					amp[notenum][12].gain.value+=harmonicsAmountArray[10];
+					amp[notenum][13].gain.value+=harmonicsAmountArray[11];
+					amp[notenum][14].gain.value+=harmonicsAmountArray[12];
+					console.log(amp[notenum]);
+					console.log(osc[notenum][2].frequency.value);
+				break;
+				
+				case 3: //3 is done!
+					console.log("press3");
+					amp[notenum][6].gain.value+=harmonicsAmountArray[0];
+					amp[notenum][7].gain.value+=harmonicsAmountArray[1];
+					amp[notenum][8].gain.value+=harmonicsAmountArray[2];
+					amp[notenum][9].gain.value+=harmonicsAmountArray[3];
+					amp[notenum][10].gain.value+=harmonicsAmountArray[4];
+					amp[notenum][11].gain.value+=harmonicsAmountArray[5];
+					amp[notenum][12].gain.value+=harmonicsAmountArray[6];
+					amp[notenum][13].gain.value+=harmonicsAmountArray[7];
+					amp[notenum][14].gain.value+=harmonicsAmountArray[8];
+					amp[notenum][15].gain.value+=harmonicsAmountArray[9];
+					amp[notenum][16].gain.value+=harmonicsAmountArray[10];
+					//no 7th in this octave, so we skip harmonicsAmountArray[11]
+					amp[notenum][17].gain.value+=harmonicsAmountArray[12];
+					console.log(octave);
+					console.log(osc[notenum][6].frequency.value);
+					break;
+				//4 starting now, just need to do offs
+				case 4: 
+					console.log("press4");
+					amp[notenum][10].gain.value+=harmonicsAmountArray[0];
+					amp[notenum][11].gain.value+=harmonicsAmountArray[1];
+					amp[notenum][12].gain.value+=harmonicsAmountArray[2];
+					amp[notenum][13].gain.value+=harmonicsAmountArray[3];
+					amp[notenum][14].gain.value+=harmonicsAmountArray[4];
+					amp[notenum][15].gain.value+=harmonicsAmountArray[5];
+					amp[notenum][16].gain.value+=harmonicsAmountArray[6];
+					amp[notenum][17].gain.value+=harmonicsAmountArray[8];
+					console.log(octave);
+					break;
+				
+				case 5: //5 for on here is done...
+					console.log("press5");
+					amp[notenum][14].gain.value+=harmonicsAmountArray[0];
+					amp[notenum][15].gain.value+=harmonicsAmountArray[1];
+					amp[notenum][16].gain.value+=harmonicsAmountArray[2];
+					amp[notenum][17].gain.value+=harmonicsAmountArray[3];
+					console.log(octave);
+					break;
+				
+				case 6: //7 done, now for octaves
+					console.log("press6");
+					amp[notenum][17].gain.value+=harmonicsAmountArray[0];
+					console.log(octave);
+					break;
+			}
+		}
+		else if(e.state === true && pianoID===2){ //this is for 3rds, the [18] is an added 3rd fundamental
+
+			//1 calibrated
+			switch (octave){
+				case 1: 
+					amp[notenum][18].gain.value+=harmonicsAmountArray[0];
+					amp[notenum][3].gain.value+=harmonicsAmountArray[2];
+					amp[notenum][4].gain.value+=harmonicsAmountArray[3];
+					amp[notenum][5].gain.value+=harmonicsAmountArray[4];
+					amp[notenum][6].gain.value+=harmonicsAmountArray[5];
+					amp[notenum][7].gain.value+=harmonicsAmountArray[6];
+					amp[notenum][8].gain.value+=harmonicsAmountArray[7];
+					amp[notenum][9].gain.value+=harmonicsAmountArray[8];
+					amp[notenum][10].gain.value+=harmonicsAmountArray[9];
+					amp[notenum][11].gain.value+=harmonicsAmountArray[10];
+					console.log(osc[notenum][18].frequency.value);
+					break;
+					
+				//2 is done
+				case 2:
+					console.log("press2");
+					amp[notenum][3].gain.value+=harmonicsAmountArray[0];
+					amp[notenum][4].gain.value+=harmonicsAmountArray[1];
+					amp[notenum][5].gain.value+=harmonicsAmountArray[2];
+					amp[notenum][6].gain.value+=harmonicsAmountArray[3];
+					amp[notenum][7].gain.value+=harmonicsAmountArray[4];
+					amp[notenum][8].gain.value+=harmonicsAmountArray[5];
+					amp[notenum][9].gain.value+=harmonicsAmountArray[6];
+					amp[notenum][10].gain.value+=harmonicsAmountArray[7];
+					amp[notenum][11].gain.value+=harmonicsAmountArray[8];
+					amp[notenum][12].gain.value+=harmonicsAmountArray[9];
+					amp[notenum][13].gain.value+=harmonicsAmountArray[10];
+					amp[notenum][14].gain.value+=harmonicsAmountArray[11];
+					amp[notenum][15].gain.value+=harmonicsAmountArray[12];
+					console.log(amp[notenum]);
+					console.log(osc[notenum][3].frequency.value);
+				break;
+
+
+				case 3: //3 done
+					console.log("press3");
+					amp[notenum][7].gain.value+=harmonicsAmountArray[0];
+					amp[notenum][8].gain.value+=harmonicsAmountArray[1];
+					amp[notenum][9].gain.value+=harmonicsAmountArray[2];
+					amp[notenum][10].gain.value+=harmonicsAmountArray[3];
+					amp[notenum][11].gain.value+=harmonicsAmountArray[4];
+					amp[notenum][12].gain.value+=harmonicsAmountArray[5];
+					amp[notenum][13].gain.value+=harmonicsAmountArray[6];
+					amp[notenum][14].gain.value+=harmonicsAmountArray[7];
+					amp[notenum][15].gain.value+=harmonicsAmountArray[8];
+					console.log(octave);
+					break;
+				
+				case 4: //4 done
+					console.log("press4");
+					amp[notenum][11].gain.value+=harmonicsAmountArray[0];
+					amp[notenum][12].gain.value+=harmonicsAmountArray[1];
+					amp[notenum][13].gain.value+=harmonicsAmountArray[2];
+					amp[notenum][14].gain.value+=harmonicsAmountArray[3];
+					amp[notenum][15].gain.value+=harmonicsAmountArray[4];
+					console.log(octave);
+					break;
+				
+				case 5: //5 done
+					console.log("press5");
+					amp[notenum][15].gain.value+=harmonicsAmountArray[0];
+					amp[notenum][16].gain.value+=harmonicsAmountArray[1];
+					amp[notenum][17].gain.value+=harmonicsAmountArray[2];
+					console.log(octave);
+					break;
+				
+				case 6:
+					console.log("press6");
+					console.log("octave: 6, but there wasn't a 3rd at this pitch on the Telharmonium");
+					console.log(octave);
+					break;
+			}
+		}
+		//////FALSES
+		else if(sustainPedalBool===false && e.state ===false  && pianoID===0){
+			switch (octave){
+					case 1: 
+					amp[notenum][1].gain.value-=harmonicsAmountArray[0];
+					amp[notenum][4].gain.value-=harmonicsAmountArray[2];
+					amp[notenum][5].gain.value-=harmonicsAmountArray[3];
+					amp[notenum][6].gain.value-=harmonicsAmountArray[4];
+					amp[notenum][7].gain.value-=harmonicsAmountArray[5];
+					amp[notenum][8].gain.value-=harmonicsAmountArray[6];
+					amp[notenum][9].gain.value-=harmonicsAmountArray[7];
+					amp[notenum][10].gain.value-=harmonicsAmountArray[8];
+					amp[notenum][11].gain.value-=harmonicsAmountArray[9];
+					amp[notenum][12].gain.value-=harmonicsAmountArray[10];
+					console.log("octave: " + octave + "| freq: :" + osc[notenum][1].frequency.value);
+					
+					break;
+					
+				case 2:
+					console.log("press2");
+					amp[notenum][4].gain.value-=harmonicsAmountArray[0];
+					amp[notenum][5].gain.value-=harmonicsAmountArray[1];
+					amp[notenum][6].gain.value-=harmonicsAmountArray[2];
+					amp[notenum][7].gain.value-=harmonicsAmountArray[3];
+					amp[notenum][8].gain.value-=harmonicsAmountArray[4];
+					amp[notenum][9].gain.value-=harmonicsAmountArray[5];
+					amp[notenum][10].gain.value-=harmonicsAmountArray[6];
+					amp[notenum][11].gain.value-=harmonicsAmountArray[7];
+					amp[notenum][12].gain.value-=harmonicsAmountArray[8];
+					amp[notenum][13].gain.value-=harmonicsAmountArray[9];
+					amp[notenum][14].gain.value-=harmonicsAmountArray[10];
+					amp[notenum][15].gain.value-=harmonicsAmountArray[11];
+					amp[notenum][16].gain.value-=harmonicsAmountArray[12];
+					console.log(amp[notenum]);
+					console.log("octave: " + octave + "| freq: :" + osc[notenum][5].frequency.value);
+				break;
+
+				case 3: //3 is done for 5ths
+					console.log("press3");
+					amp[notenum][8].gain.value-=harmonicsAmountArray[0];
+					amp[notenum][9].gain.value-=harmonicsAmountArray[1];
+					amp[notenum][10].gain.value-=harmonicsAmountArray[2];
+					amp[notenum][11].gain.value-=harmonicsAmountArray[3];
+					amp[notenum][12].gain.value-=harmonicsAmountArray[4];
+					amp[notenum][13].gain.value-=harmonicsAmountArray[5];
+					amp[notenum][14].gain.value-=harmonicsAmountArray[6];
+					amp[notenum][15].gain.value-=harmonicsAmountArray[7];
+					amp[notenum][16].gain.value-=harmonicsAmountArray[8];
+					console.log("octave: " + octave + "| freq: :" + osc[notenum][8].frequency.value);
+					break;
+				
+				case 4: //4 is done for 5ths, 
+					console.log("press4");
+					amp[notenum][12].gain.value-=harmonicsAmountArray[0];
+					amp[notenum][13].gain.value-=harmonicsAmountArray[1];
+					amp[notenum][14].gain.value-=harmonicsAmountArray[2];
+					amp[notenum][15].gain.value-=harmonicsAmountArray[3];
+					amp[notenum][16].gain.value-=harmonicsAmountArray[4];
+					console.log("octave: " + octave + "| freq: :" + osc[notenum][12].frequency.value);
+					break;
+				
+				case 5: //5 done, now for ons
+					console.log("press5");
+					amp[notenum][16].gain.value-=harmonicsAmountArray[0];
+					amp[notenum][17].gain.value-=harmonicsAmountArray[1];
+					console.log("octave: " + octave + "| freq: :" + osc[notenum][14].frequency.value);
+					break;
+				
+				case 6:
+					console.log("press6");
+					console.log("octave: 6 , but there was no 5th at this pitch on the telharmonium");
+					break;
+			}}		
+		else if(sustainPedalBool===false && e.state ===false  && pianoID===1){
+			switch (octave){
+			//1 is calibrated
+				case 1: 
+					amp[notenum][0].gain.value-=harmonicsAmountArray[0];
+					amp[notenum][1].gain.value-=harmonicsAmountArray[2];
+					amp[notenum][2].gain.value-=harmonicsAmountArray[4];
+					amp[notenum][3].gain.value-=harmonicsAmountArray[5];
+					amp[notenum][4].gain.value-=harmonicsAmountArray[6];
+					amp[notenum][5].gain.value-=harmonicsAmountArray[7];
+					amp[notenum][6].gain.value-=harmonicsAmountArray[8];
+					amp[notenum][7].gain.value-=harmonicsAmountArray[9];
+					amp[notenum][8].gain.value-=harmonicsAmountArray[10];
+					amp[notenum][9].gain.value-=harmonicsAmountArray[11];
+					amp[notenum][10].gain.value-=harmonicsAmountArray[12];
+					console.log(e.state);
+					console.log(octave +  " should mute them?>");
+					console.log("fundamental for note: " + amp[notenum][0]);
+					break;
+				//2 is done!
+				case 2:
+					console.log("press2");
+					amp[notenum][2].gain.value-=harmonicsAmountArray[0];
+					amp[notenum][3].gain.value-=harmonicsAmountArray[1];
+					amp[notenum][4].gain.value-=harmonicsAmountArray[2];
+					amp[notenum][5].gain.value-=harmonicsAmountArray[3];
+					amp[notenum][6].gain.value-=harmonicsAmountArray[4];
+					amp[notenum][7].gain.value-=harmonicsAmountArray[5];
+					amp[notenum][8].gain.value-=harmonicsAmountArray[6];
+					amp[notenum][9].gain.value-=harmonicsAmountArray[7];
+					amp[notenum][10].gain.value-=harmonicsAmountArray[8];
+					amp[notenum][11].gain.value-=harmonicsAmountArray[9];
+					amp[notenum][12].gain.value-=harmonicsAmountArray[10];
+					amp[notenum][13].gain.value-=harmonicsAmountArray[11];
+					amp[notenum][14].gain.value-=harmonicsAmountArray[12];
+					console.log(octave);
+				console.log("fundamental for note: " + osc[notenum][1].frequency.value);
+				break;
+
+
+				case 3: //3 is done
+					console.log("press3");
+					amp[notenum][6].gain.value-=harmonicsAmountArray[0];
+					amp[notenum][7].gain.value-=harmonicsAmountArray[1];
+					amp[notenum][8].gain.value-=harmonicsAmountArray[2];
+					amp[notenum][9].gain.value-=harmonicsAmountArray[3];
+					amp[notenum][10].gain.value-=harmonicsAmountArray[4];
+					amp[notenum][11].gain.value-=harmonicsAmountArray[5];
+					amp[notenum][12].gain.value-=harmonicsAmountArray[6];
+					amp[notenum][13].gain.value-=harmonicsAmountArray[7];
+					amp[notenum][14].gain.value-=harmonicsAmountArray[8];
+					amp[notenum][15].gain.value-=harmonicsAmountArray[9];
+					amp[notenum][16].gain.value-=harmonicsAmountArray[10];
+					//no 7th in this octave, so we skip harmonicsAmountArray[11]
+					amp[notenum][17].gain.value-=harmonicsAmountArray[12];
+					console.log(octave);
+					break;
+				
+				case 4: //4 is done
+					console.log("press4");
+					amp[notenum][10].gain.value-=harmonicsAmountArray[0];
+					amp[notenum][11].gain.value-=harmonicsAmountArray[1];
+					amp[notenum][12].gain.value-=harmonicsAmountArray[2];
+					amp[notenum][13].gain.value-=harmonicsAmountArray[3];
+					amp[notenum][14].gain.value-=harmonicsAmountArray[4];
+					amp[notenum][15].gain.value-=harmonicsAmountArray[5];
+					amp[notenum][16].gain.value-=harmonicsAmountArray[6];
+					amp[notenum][17].gain.value-=harmonicsAmountArray[8];
+					console.log(octave);
+					break;
+				
+				case 5: //5 is done for normal keyboard
+					console.log("press5");
+					amp[notenum][14].gain.value-=harmonicsAmountArray[0];
+					amp[notenum][15].gain.value-=harmonicsAmountArray[1];
+					amp[notenum][16].gain.value-=harmonicsAmountArray[2];
+					amp[notenum][17].gain.value-=harmonicsAmountArray[3];
+					console.log(octave);
+					break;
+				
+				case 6: // 6 done
+					console.log("press6");
+					amp[notenum][17].gain.value-=harmonicsAmountArray[0];
+					console.log(octave);
+					break;
+			}
+			
+			
+		}
+		else if(sustainPedalBool===false && e.state ===false  && pianoID===2){		
+			//1 done
+			switch (octave){
+				case 1: 
+					amp[notenum][18].gain.value-=harmonicsAmountArray[0];
+					amp[notenum][3].gain.value-=harmonicsAmountArray[2];
+					amp[notenum][4].gain.value-=harmonicsAmountArray[3];
+					amp[notenum][5].gain.value-=harmonicsAmountArray[4];
+					amp[notenum][6].gain.value-=harmonicsAmountArray[5];
+					amp[notenum][7].gain.value-=harmonicsAmountArray[6];
+					amp[notenum][8].gain.value-=harmonicsAmountArray[7];
+					amp[notenum][9].gain.value-=harmonicsAmountArray[8];
+					amp[notenum][10].gain.value-=harmonicsAmountArray[9];
+					amp[notenum][11].gain.value-=harmonicsAmountArray[10];
+					console.log(amp[notenum]);
+					console.log(osc[notenum][18].frequency.value);
+					break;
+				//2 done
+				case 2:
+					console.log("press2");
+					amp[notenum][3].gain.value-=harmonicsAmountArray[0];
+					amp[notenum][4].gain.value-=harmonicsAmountArray[1];
+					amp[notenum][5].gain.value-=harmonicsAmountArray[2];
+					amp[notenum][6].gain.value-=harmonicsAmountArray[3];
+					amp[notenum][7].gain.value-=harmonicsAmountArray[4];
+					amp[notenum][8].gain.value-=harmonicsAmountArray[5];
+					amp[notenum][9].gain.value-=harmonicsAmountArray[6];
+					amp[notenum][10].gain.value-=harmonicsAmountArray[7];
+					amp[notenum][11].gain.value-=harmonicsAmountArray[8];
+					amp[notenum][12].gain.value-=harmonicsAmountArray[9];
+					amp[notenum][13].gain.value-=harmonicsAmountArray[10];
+					amp[notenum][14].gain.value-=harmonicsAmountArray[11];
+					amp[notenum][15].gain.value-=harmonicsAmountArray[12];
+					console.log(amp[notenum]);
+					console.log(osc[notenum][2].frequency.value);
+				break;
+
+				case 3: //3 done
+					console.log("press3");
+					amp[notenum][7].gain.value-=harmonicsAmountArray[0];
+					amp[notenum][8].gain.value-=harmonicsAmountArray[1];
+					amp[notenum][9].gain.value-=harmonicsAmountArray[2];
+					amp[notenum][10].gain.value-=harmonicsAmountArray[3];
+					amp[notenum][11].gain.value-=harmonicsAmountArray[4];
+					amp[notenum][12].gain.value-=harmonicsAmountArray[5];
+					amp[notenum][13].gain.value-=harmonicsAmountArray[6];
+					amp[notenum][14].gain.value-=harmonicsAmountArray[7];
+					amp[notenum][15].gain.value-=harmonicsAmountArray[8];
+					console.log(octave);
+					break;
+				
+				case 4:  //4 done
+					console.log("press4");
+					amp[notenum][11].gain.value-=harmonicsAmountArray[0];
+					amp[notenum][12].gain.value-=harmonicsAmountArray[1];
+					amp[notenum][13].gain.value-=harmonicsAmountArray[2];
+					amp[notenum][14].gain.value-=harmonicsAmountArray[3];
+					amp[notenum][15].gain.value-=harmonicsAmountArray[4];
+					console.log(octave);
+					break;
+				
+				case 5: //5 done
+					console.log("press5");
+					amp[notenum][15].gain.value-=harmonicsAmountArray[0];
+					amp[notenum][16].gain.value-=harmonicsAmountArray[1];
+					amp[notenum][17].gain.value-=harmonicsAmountArray[2];
+					console.log(octave);
+					break;
+				
+				case 6:
+					console.log("press6");
+					console.log("octave: 6, but there was no 3rd at this pitch on the telharmonium");
+					break;
+			}
+		}
+		
+		else if(sustainPedalBool ===true && e.state ===false){
+			//going to need to bank up a list of notes to turn off when the pedal bool changes.
+			sustainPedalActiveAmpList.push(notenum);
+		}
+	};					
+	// dynamics
+	var dynamicPiano = new Nexus.Piano('#dynamicPianoDiv',{'lowNote' : 0, 'highNote' : 24,'mode': 'button'});
+	dynamicPiano.colorize("accent","#cccccc")
+	console.log(dynamicAmp.gain.value);
+	//toggle, but overwrites the other presses if two are down.
+	dynamicPiano.on('change', function(e){
+		//masterAmp.gain.value = (e.note + 1) / 12;
+		var dynamicChoice = (e.note + 1) / 24;
+		console.log(dynamicChoice);
+		dynamicAmp.gain.value = dynamicChoice % 24;
+		console.log(dynamicAmp.gain.value);
+	});
+	
+	//tonemixing 
+	toneSliderArray.on('change', function(event){
+		console.log(event.value);{
+		 harmonicsAmountArray1sts[event.index] = event.value;
+		updateMainArray1sts();
+		console.log(harmonicsAmountArray);
+		}
+	});
+	toneSliderArray3rds.on('change', function(event){
+		console.log(event.value);{
+		 harmonicsAmountArray1sts[event.index] = event.value;
+		updateMainArray3rds();
+		console.log(harmonicsAmountArray);
+		}
+	});
+
+	toneSliderArray5ths.on('change', function(event){
+		console.log(event.value);{
+		 harmonicsAmountArray5ths[event.index] = event.value;
+		updateMainArray5ths();
+		console.log(harmonicsAmountArray);
+		}
+	});
+	toneSliderArray7ths.on('change', function(event){
+		console.log(event.value);{
+		 harmonicsAmountArray7ths[event.index] = event.value;
+		updateMainArray7ths();
+		console.log(harmonicsAmountArray);
+		}
+	});
+
+
+////// NOT MINE found on https://stackoverflow.com/questions/27889800/javascript-arrays-reordering-an-array-starting-at-a-specified-index-while-kee
+// This is the equivalent of zl.rot in Max MSP.
+
+function reorder(data, index) {
+  return data.slice(index).concat(data.slice(0, index))
+};
+
+		</script>
+	</body>
+</html>

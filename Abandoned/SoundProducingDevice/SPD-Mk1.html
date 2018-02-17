@@ -1,0 +1,89 @@
+<html>
+	<head><meta charset="utf-8"/>
+	</head>
+	<body>
+		<h1>Melvin Linwood Severy's "Sound Producing Device" - 1912</h1>
+		<div id="spectrogramDiv"></div>
+		<div id="keyboardDiv"></div>
+		
+		<button id="recordSampleButton">Record Your Own Sample!</button>
+		<button id="stopButton">Stop recording</button>
+		
+		<script src="https://rawgit.com/nexus-js/ui/master/dist/NexusUI.js"></script>
+		<br>
+		
+		<input type="file" accept="audio/*" capture id="recorder">
+		<audio id="player" controls></audio>
+		
+		
+	<script>
+	var recordBool = false;
+  var handleSuccess = function(stream) {
+    var context = new AudioContext();
+    var source = context.createMediaStreamSource(stream);
+    var processor = context.createScriptProcessor(1024, 1, 1);
+	var outputData = context.createBuffer(1, 4096, context.sampleRate);
+		var recordSampleButtonVar = document.getElementById('recordSampleButton');
+	recordSampleButtonVar.onclick = function(){
+		recordBool = true;
+		console.log(recordBool);
+	}
+	
+	var stopButtonVar = document.getElementById('stopButton');
+	stopButtonVar.onclick = function(){
+		recordBool = false;
+		console.log("test" + recordBool);
+		playbuffer();
+	}
+	
+	function playbuffer(){
+	console.log(outputData);
+		context.decodeAudioData(outputData).then(function(decodedData) {
+		// use the decoded data here
+			bufferSource.buffer = decodedData;
+			console.log("test" + decodedData);
+			console.log(bufferSource.buffer);
+		});
+	}
+	
+    source.connect(processor);
+    processor.connect(context.destination);
+	
+	bufferSource = context.createBufferSource();
+	bufferSource.connect(context.destination);
+	
+    processor.onaudioprocess = function(e) {
+		console.log(recordBool);
+		if(recordBool === true){
+			  var inputBuffer = e.inputBuffer;
+
+			  // The output buffer contains the samples that will be modified and played
+			  var outputBuffer = e.outputBuffer;
+
+			  // Loop through the output channels (in this case there is only one)
+			  for (var channel = 0; channel < outputBuffer.numberOfChannels; channel++) {
+				var inputData = inputBuffer.getChannelData(channel);
+				outputData = outputBuffer.getChannelData(channel);
+
+				// Loop through the 4096 samples
+				for (var sample = 0; sample < inputBuffer.length; sample++) {
+				  // make output equal to the same as the input
+				  outputData[sample] = inputData[sample];
+		}
+    };
+  }}};
+  
+  
+
+	
+
+  
+  
+  navigator.mediaDevices.getUserMedia({ audio: true, video: false })
+      .then(handleSuccess);
+	  
+	  
+</script>
+
+	</body>
+</html>

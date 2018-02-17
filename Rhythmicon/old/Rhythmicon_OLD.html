@@ -1,0 +1,19 @@
+
+<body>
+<div id=oscilloscopeDiv></div>
+<script src="https://rawgit.com/nexus-js/ui/master/dist/NexusUI.js"></script>
+<script>
+var audio_context = window.AudioContext || window.webkitAudioContext;
+var con = new audio_context();
+
+
+var osc1 = con.createOscillator();
+osc1.frequency.value = 600;
+osc1.type = "sawtooth";
+var amp1 = con.createGain();
+amp1.connect(con.destination);
+osc1.connect(amp1);
+osc1.start();
+
+
+</script>
